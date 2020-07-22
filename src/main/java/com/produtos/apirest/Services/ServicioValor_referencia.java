@@ -42,13 +42,13 @@ public class ServicioValor_referencia extends Conexion {
 	}
 	
 
-	public List<Valor_referencia> listar_valor_referencia(int cod_examen){
+	public List<Valor_referencia> listarValoresDeReferenciaDeExamen(int cod_examen){
 		String sql="select * from valor_referencia where cod_examen="+cod_examen+" and estado=true";
 		return  db.query(sql,new Valor_referenciaRowMapper());
 		
 		 
 	}
-	public  List<Valor_referencia>  cambiarEstadoValorReferencia(int cod_examen, int cod_v){
+	public  List<Valor_referencia>  modificarEstadoDeValorDeReferencia(int cod_examen, int cod_v){
 		System.out.println("cod_v"+cod_v);
 		String sql="update valor_referencia set estado=false where cod_examen="+cod_examen+" and cod_valor_referencia="+cod_v+";";
 		db.update(sql);
@@ -65,15 +65,20 @@ public class ServicioValor_referencia extends Conexion {
 		
 		
 	}
-	public void modificarOregistrar(Examen e) {
+	public void modificar(Valor_referencia v) {
+		Object[] datos2={ v.getValor_inicial(), v.getValor_final(), v.getTipo_persona(),v.getEstado(), v.getCod_examen(), v.getCod_valor_referencia()};
+		String sql2="update valor_referencia set valor_inicial=?, valor_final=?, tipo_persona=?, estado=? where cod_examen=? and cod_valor_referencia=?";
+		db.update(sql2,datos2);
+		System.out.println("examenactualizado"+v.getCod_examen()+" "+v.getCod_valor_referencia());
+	}
+	public void agregarValoresDeReferenciaAExamen(Examen e) {
 		for(Valor_referencia v:e.getValores_referencia())
 		{
 			v.setCod_examen(e.getCod_examen());
 			if(v.getCod_valor_referencia()!=0)
 			{
-		Object[] datos2={ v.getValor_inicial(), v.getValor_final(), v.getTipo_persona(),v.getEstado(), e.getCod_examen(), v.getCod_valor_referencia()};
-		String sql2="update valor_referencia set valor_inicial=?, valor_final=?, tipo_persona=?, estado=? where cod_examen=? and cod_valor_referencia=?";
-		db.update(sql2,datos2);
+			v.setCod_examen(e.getCod_examen());
+		modificar(v);
 			}
 			else
 			{

@@ -1,16 +1,30 @@
 package com.produtos.apirest.models;
-
+import java.util.Calendar;
 import java.util.Date;
 
 import Utilidades.UFormat;
 public class Dosificacion {
 
 
-	UFormat uf=new UFormat();
 	
-	private int cod_dosificacion, nit, nro_emisiones;
+	
+	
+ private int cod_dosificacion, nit, nro_emisiones;
 	private String llave, autorizacion, leyenda;
-	private Date fecha_registro, fecha_limite_emision;
+	
+	public String getFecha_registro() {
+		return fecha_registro;
+	}
+	public void setFecha_registro(String fecha_registro) {
+		this.fecha_registro = fecha_registro;
+	}
+	public String getFecha_limite_emision() {
+		return fecha_limite_emision;
+	}
+	public void setFecha_limite_emision(String fecha_limite_emision) {
+		this.fecha_limite_emision = fecha_limite_emision;
+	}
+	private String fecha_registro, fecha_limite_emision;
 	
 	public int getCod_dosificacion() {
 		return cod_dosificacion;
@@ -48,16 +62,6 @@ public class Dosificacion {
 	public void setLeyenda(String leyenda) {
 		this.leyenda = leyenda;
 	}
-	public String getFecha_registro() {
-		return uf.dateFormat(fecha_registro);
-	}
-	public void setFecha_registro(Date fecha_registro) {
-		this.fecha_registro = fecha_registro;
-	}
-	public String getFecha_limite_emision() {
-		return uf.dateFormat(fecha_limite_emision);
-	}
-	public void setFecha_limite_emision(Date fecha_limite_emision) {
-		this.fecha_limite_emision = fecha_limite_emision;
-	}
+
+
 }

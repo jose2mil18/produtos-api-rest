@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.produtos.apirest.models.*;
 import com.produtos.apirest.Services.ServicioPaciente;
-import com.produtos.apirest.Services.ServicioPrecio_examen.Precio_examenRowMapper;
+import com.produtos.apirest.Services.ServicioPrecio_de_examen.Precio_examenRowMapper;
 import com.produtos.apirest.Services.ServicioUsuario.UsuarioRowMapper;
 import com.produtos.apirest.Services.ServicioMenu;
 import com.produtos.apirest.varios.*;
@@ -37,7 +37,7 @@ import com.produtos.apirest.Services.ServicioPaciente;
 public class ServicioReporte_anual extends Conexion {
 	int sum=0;
 	@Autowired
-	ServicioPrecio_examen servicioPrecio_examen;
+	ServicioPrecio_de_examen servicioPrecio_examen;
 	@Autowired
 	ServicioInstitucion servicioInstitucion;
 	@Autowired
@@ -50,18 +50,18 @@ public class ServicioReporte_anual extends Conexion {
 		public Reporte_anual mapRow(ResultSet rs, int arg1) throws SQLException {
 			Reporte_anual r=new Reporte_anual();
 			//r.setPrecio_examen(servicioPrecio_examen.getById(rs.getInt("cod_precio_examen")));
-			r.setInstitucion(servicioInstitucion.Institucion(rs.getString("cod_institucion")));
+			r.setInstitucion(servicioInstitucion.buscarPorCodigo(rs.getString("cod_institucion")));
 		
 			r.setAnio(rs.getInt("anio"));
 	r.setMonto_total(rs.getDouble("monto_total"));
 		r.setNro_prestaciones_total(rs.getInt("nro_prestaciones_total"));
-		r.setReportes_mensuales(servicioReporte_mensual.reporte_todos_meses(r.getInstitucion().getCod_institucion(), r.getAnio()));
+		r.setReportes_mensuales(servicioReporte_mensual.listarTodosLosMesesDeAcuerdoALaInstitucion(r.getInstitucion().getCod_institucion(), r.getAnio()));
 			return r;
 		}
 	}
 
 
-	public  Reporte_anual reporte_anual(Reporte_anual re){
+	public  Reporte_anual buscar(Reporte_anual re){
 		Reporte_anual reporte =new Reporte_anual();
 		Object datos[]={re.getInstitucion().getCod_institucion(), re.getAnio()};
 		String sql="SELECT  pe.cod_institucion,extract(year from s.fecha) as anio ,count(soe.cod_precio_examen) as nro_prestaciones_total, sum(pe.costo) as monto_total   FROM sol_exam soe, solicitud s, precio_examen pe      WHERE pe.cod_precio_examen=soe.cod_precio_examen  and   soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion=?  and extract(year from s.fecha)=?  group by 1, 2 ";

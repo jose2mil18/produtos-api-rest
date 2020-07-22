@@ -55,7 +55,7 @@ public class Valor_referenciaController {
 	@ApiOperation(value="Retorna uma lista de areas")
 	@PostMapping("cambiar-estado-de-valor-referencia")//
 	public List<Valor_referencia> estadodefadklfa(@RequestBody Map<String, Integer> body){
-		return servicioValor_referencia.cambiarEstadoValorReferencia(body.get("cod_examen"), body.get("cod_valor_referencia"));
+		return servicioValor_referencia.modificarEstadoDeValorDeReferencia(body.get("cod_examen"), body.get("cod_valor_referencia"));
 	}
 	
 }

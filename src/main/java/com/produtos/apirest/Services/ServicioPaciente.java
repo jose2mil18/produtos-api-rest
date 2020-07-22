@@ -61,13 +61,14 @@ public class ServicioPaciente  extends Conexion {
 			 //p.setEdad(rs.getInt("edad"));hj
 			p.setCedula_usuario(rs.getString("cedula_usuario"));
 			//p.setSolicitudes_examenes(servicioSolicitud.buscarSolicitudPorCedulaPaciente(p.getCedula()));
-			p.setExamenes_solicitados(servicioExamen_solicitado.examenes_solicitados_de_paciente(p.getCedula()));
+			p.setExamenes_solicitados(servicioExamen_solicitado.listarExamenesSolicitadosDePaciente(p.getCedula()));
 			p.setCorreo_electronico(rs.getString("correo_electronico"));
 		
 			return p;
 		}
 	}
 	public List<Paciente> listar(){
+		System.out.println("klñpfjalsjdflkjadsf");
 		String sql="select * from pacientes";
 		
 		return  db.query(sql, new PacienteRowMapper());
@@ -75,12 +76,39 @@ public class ServicioPaciente  extends Conexion {
 		
 		 
 	}
-	public List<Paciente> buscar(String procedencia, String sexo){
+	public String nombresCompletos(String cedula) {
+		Paciente p=new Paciente();
+		p=buscarPorCedula(cedula);
+		return p.getPersona().getNombre()+" "+p.getPersona().getAp()+" "+p.getPersona().getAm();
+	}
+	public List<Paciente> buscar(String procedencia, String sexo, String eda){
+		int edad=0;
+		List<Paciente> pacientes = new ArrayList<Paciente>();
+		System.out.println(eda);
+		try {
+			edad=Integer.parseInt(eda);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		System.out.println(procedencia);
+		
 		String sql="select * from pacientes where procedencia ilike '%"+procedencia+"%' and sexo ilike '%"+sexo+"%'";
+		pacientes=db.query(sql, new PacienteRowMapper());
 		
-		return  db.query(sql, new PacienteRowMapper());
+		if(edad!=0)
+		{
+		for(int i=0;i<pacientes.size();i++) {
+			System.out.println("edad"+pacientes.get(i).getEdad());
+			if(pacientes.get(i).getEdad()!=edad) {
+				
+			Paciente p=pacientes.remove(i);
+			System.out.println("paciente eliminado"+p.getPersona().getNombre());
+			i--;
+			}
+		}
+		}
+		return  pacientes;
 		
 		
 		
@@ -133,28 +161,26 @@ public void registrar(Paciente p){
 		
 			System.out.println("succesfull");
 		}
-	public Paciente update(Paciente p){
+	public Paciente modificar(Paciente p){
 		System.out.println("fechade nacimiento"+p.getFnac());
 		java.util.Date fnac=ParseFecha(p.getFnac());
-		Object[] datos1={ p.getPersona().getNombre(), p.getPersona().getAp(), p.getPersona().getAm(),p.getCod_persona()};
 	
 			Object[] datos2={ p.getProcedencia(), p.getSexo(), p.getCedula_usuario(), fnac, p.getCorreo_electronico(), p.getCedula()};
-		String sql1="update  persona set nombre=?, ap=?, am=? where cod_persona=?";
-			
+		
 //			login=new Md4PasswordEncoder().encode(login);
 //			password=new Md4PasswordEncoder().encode(password);
 			String sql2="update pacientes set procedencia=?, sexo=?, cedula_usuario=?, fnac=?, correo_electronico=?  where cedula=?";
-			db.update(sql1, datos1);
+		servicioPersona.modificar(p.getPersona());
 			db.update(sql2, datos2);
 		
 			System.out.println("succesfull");
-			return buscar_por_cedula(p.getCedula());
+			return buscarPorCedula(p.getCedula());
 		
 		
 		}
 
 
-public Paciente buscar_por_cedula(String cedula){
+public Paciente buscarPorCedula(String cedula){
 	
 	Object[] datos={cedula};
 	sql="SELECT *  FROM pacientes WHERE cedula=? ";
@@ -179,12 +205,7 @@ public Integer contarpacientes(){
 	
 	return db.queryForObject(sql,Integer.class);
 }
-public String proce(){
-	
-	sql="select procedencia from pacientes where cedula='7197500'";
-	
-	return db.queryForObject(sql,String.class);
-}
+
 public static java.util.Date ParseFecha(String fecha)
 {
     SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
@@ -234,7 +255,13 @@ public class PacientesRowMapper implements RowMapper<Paciente> {
 		p.setPersona(servicioPersona.obtener_persona(p.getCod_persona()));
 		//p.setProcedencia(rs.getString("procedencia"));
 		//p.setSexo(rs.getString("sexo"));
+		p.setProcedencia(rs.getString("procedencia"));
+		p.setSexo(rs.getString("sexo"));
+		
+		p.setNombres(p.getPersona().getNombre()+" "+p.getPersona().getAp()+" "+p.getPersona().getAm());
+		//p.setFecha_nacimiento(rs);
 
+	     p.setEdad(pa.calcularEdad(rs.getString("fnac")));
 		
 		//p.setFecha_nacimiento(rs);
 

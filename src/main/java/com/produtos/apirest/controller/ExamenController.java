@@ -1,10 +1,6 @@
 package com.produtos.apirest.controller;
 import org.springframework.web.bind.annotation.RequestParam;	
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.util.ArrayList;
-import java.util.List;
-
-
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -47,7 +43,11 @@ public class ExamenController {
 	
 	@Autowired
 	Precio_examen precio_examen;
-	
+	@ApiOperation(value="Retorna uma lista de areas")
+	@PostMapping("examenes-por-area")
+	public List<Examen> listaexamenes(@RequestBody Map<String, String> body){
+		return servicioExamen.listarporarea(body.get("cod_area"));
+	}
 	@ApiOperation(value="Retorna uma lista de areas")
 	@PostMapping("examenesporarea")
 	public List<Examen> listaAreas(@RequestBody @Valid Precio_examen pe){

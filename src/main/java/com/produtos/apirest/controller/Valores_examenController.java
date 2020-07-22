@@ -41,7 +41,7 @@ public class Valores_examenController {
 	@PostMapping("/obtener-valores-examenes")
 	public List<Resultados_por_defecto> listaValoresExamen(@RequestBody Map<String, String> body){
 	System.out.println(Integer.parseInt(body.get("cod_examen"))+" "+ body.get("caracter"));
-		return servicioValores_examen.listar(Integer.parseInt(body.get("cod_examen")), body.get("caracter"));
+		return servicioValores_examen.buscar(Integer.parseInt(body.get("cod_examen")), body.get("caracter"));
 	}
 	@PostMapping("/obtener-valor")
 	public String valor(@RequestBody Map<String, Integer> body){

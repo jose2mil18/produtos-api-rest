@@ -37,18 +37,17 @@ public class ServicioPersonal extends Conexion {
 			
 			p.setFoto(rs.getString("foto"));
 			if(p.getFoto().equals("")){
-				p.setFoto("http://localhost:9898/api/file/photo_profile_user.png");
+				p.setFoto("photo_profile_user.png");
 			}
-			else {
-				p.setFoto("http://localhost:9898/api/file/"+p.getFoto());
-			}
+			p.setLink_foto("http://localhost:9898/api/file/"+p.getFoto());
+		
 			p.setPersona(servicioPersona.obtener_persona_de_usuario(p.getCod_persona()));
 			return p;
 		}
 		
 	
 	}
-	public Personal obtener_personal_de_usuario(String cedula) {
+	public Personal buscarPersonalDeUsuario(String cedula) {
 		Object[] datos={cedula};
 		String sql="select * from personal where  cedula=?";
 		return  db.queryForObject(sql, datos,new PersonalRowMapper());

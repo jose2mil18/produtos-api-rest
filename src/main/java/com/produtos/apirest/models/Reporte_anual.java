@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 @Component
 public class Reporte_anual {
-	Institucion institucion;
-	double monto_total;
-	int anio;
+	private Institucion institucion;
+	private double monto_total;
+	private int anio;
 	public Institucion getInstitucion() {
 		return institucion;
 	}
@@ -32,8 +32,8 @@ public class Reporte_anual {
 	public void setNro_prestaciones_total(int nro_prestaciones_total) {
 		this.nro_prestaciones_total = nro_prestaciones_total;
 	}
-	int nro_prestaciones_total;
-	List<Reporte_mensual> reportes_mensuales;
+	private int nro_prestaciones_total;
+	private List<Reporte_mensual> reportes_mensuales;
 	public List<Reporte_mensual> getReportes_mensuales() {
 		return reportes_mensuales;
 	}

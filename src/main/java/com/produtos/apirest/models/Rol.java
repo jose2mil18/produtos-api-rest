@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 @Component
 public class Rol {
-int cod_rol;
-String nombre;
-List<Menu> menus;
+	private int cod_rol;
+private String nombre;
+private List<Menu> menus;
 public int getCod_rol() {
 	return cod_rol;
 }

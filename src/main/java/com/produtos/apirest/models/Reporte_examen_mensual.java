@@ -16,18 +16,19 @@ public class Reporte_examen_mensual {
 	public void setNro_prestaciones(int nro_prestaciones) {
 		this.nro_prestaciones = nro_prestaciones;
 	}
-	Precio_examen precio_examen;
-	int nro_prestaciones;
-	float costo_total_examen;
+	private Precio_examen precio_examen;
+	private int nro_prestaciones;
+	private    float costo_total_examen;
 	public float getCosto_total_examen() {
 		return costo_total_examen;
 	}
 	public void setCosto_total_examen(float costo_total_examen) {
 		this.costo_total_examen = costo_total_examen;
 	}
-	int anio;
-	int mes;
-	Institucion institucion;
+	private int anio;
+	private int mes;
+
+	private Institucion institucion;
 	public int getAnio() {
 		return anio;
 	}

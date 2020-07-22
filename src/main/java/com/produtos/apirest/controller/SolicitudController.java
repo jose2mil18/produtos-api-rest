@@ -27,7 +27,6 @@ import com.produtos.apirest.models.Examen;
 import com.produtos.apirest.models.Paciente;
 import com.produtos.apirest.models.Persona;
 import com.produtos.apirest.models.Examen_solicitado;
-import com.produtos.apirest.models.Historial_clinico;
 import com.produtos.apirest.models.Solicitud;
 
 import com.produtos.apirest.Services.ServicioResultados_examen;
@@ -52,8 +51,7 @@ public class SolicitudController {
 	ServicioResultados_examen servicioresultados_examen;
 	@Autowired
 	ServicioExamen servicioExamen;
-	@Autowired
-	ServicioHistorial_clinico servicioHistorial_clinico;
+	
 	@Autowired
 	ServicioExamen_solicitado servicioExamen_solicitado;
 	
@@ -86,7 +84,7 @@ System.out.println(java.sql.Date.valueOf(fecha_inicio));
 	public List<Solicitud> filtrar_solicitudes(@RequestParam(required=false, defaultValue="") String cedula, @RequestParam(required=false, defaultValue="") String nombre_area, @RequestParam(required=false, defaultValue="") String caracter_nombre_examen, @RequestParam(required=false, defaultValue="") String fecha_solicitud, @RequestParam(required=false, defaultValue="") String fecha_inicio, @RequestParam(required=false, defaultValue="") String fecha_fin, @RequestParam(required=false, defaultValue="") String estado_solicitud, @RequestParam(required=false, defaultValue="") String resultados){
 		System.out.println(cedula+" "+fecha_solicitud+" "+fecha_inicio+" "+fecha_fin+" "+estado_solicitud+" "+resultados+"kljkjljkjkjkjkljkljkjkjkjkjkjkjkljkjkjkjkjkjkjkjkjlkjkjkljkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkjkñj-----------------------------------------------------------------------------------------------------------------------------");
 		
-		return servicioSolicitud.buscarSolicitudPorCedulaPaciente(cedula,nombre_area, caracter_nombre_examen, fecha_solicitud, fecha_inicio, fecha_fin, estado_solicitud, resultados);
+		return servicioSolicitud.buscar(cedula,nombre_area, caracter_nombre_examen, fecha_solicitud, fecha_inicio, fecha_fin, estado_solicitud, resultados);
 			
 	}
 	
@@ -102,14 +100,14 @@ System.out.println(java.sql.Date.valueOf(fecha_inicio));
 	@GetMapping("/solicitud/{id}")
 	public Solicitud listasolicitudUnica(@PathVariable(value="id") int id){
 	
-		return servicioSolicitud.listarSolicitudporcodigo(id);
+		return servicioSolicitud.buscarPorCodigo(id);
 	}
 
 	@GetMapping("/solicitud")
 	@ResponseBody
 	public Solicitud listasolicitudUnicas(@RequestParam(required=false, defaultValue="") int cod_solicitud){
 		
-		return servicioSolicitud.listarSolicitudporcodigo(cod_solicitud);
+		return servicioSolicitud.buscarPorCodigo(cod_solicitud);
 	}
 	
 	@GetMapping("/prueba")
@@ -117,13 +115,14 @@ System.out.println(java.sql.Date.valueOf(fecha_inicio));
 		System.out.println("imagen subida");
 		return "";
 	}
-	
+	/*--------------------------------------------------------------------------------------------------------------------------------------
 	@GetMapping("/solicitudes-de-examen")
 	@ResponseBody
 	public List<Solicitud> listasolicitudesDeUnExamen(@RequestParam(required=false, defaultValue="") int cod_precio_examen){
 		
 		return servicioSolicitud.listar_solicitudes_de_un_mismo_examen(cod_precio_examen);
 	}
+	*/
 	@GetMapping("/solicitud-con-resultados-actualizados/{id}")
 	public Solicitud listasolicitudconresultadosactualizados(@PathVariable(value="id") int id){
 	
@@ -141,7 +140,7 @@ System.out.println(java.sql.Date.valueOf(fecha_inicio));
 	@ApiOperation(value="Retorna uma lista de solicitudes de examenes clinicos con  resultados")
 	@GetMapping("/solicitudesConResultados")
 	public List<Solicitud> lista_solicitud_con_resultado(){
-		
+		System.out.println("laputamadre");
 		return servicioSolicitud.listarAnalisisConResultados();
 			
 	}
@@ -203,7 +202,7 @@ System.out.println(java.sql.Date.valueOf(fecha_inicio));
 	@PostMapping("/pruebita")
 	public String minimafechadesolicitus(@RequestBody  @Valid Solicitud solicitud){
 		System.out.println("fechaklp"+solicitud.getFecha()+" "+solicitud.getFecha_entrega());
-		return "";
+		return "hola";
 			
 	}
 	@ApiOperation(value="contar el numerode solicitudes pendientes")
@@ -317,7 +316,7 @@ else
 	@PostMapping("eliminar-examen-de-solicitud")
 	public List<Examen_solicitado> eliminar_exmendesolicitud(@RequestBody Map<String, Integer> body){
 	servicioExamen_solicitado.quitarExamen(body.get("cod_solicitud"), body.get("cod_examen"));
-	return servicioExamen_solicitado.examenes_solicitados(body.get("cod_solicitud"));
+	return servicioExamen_solicitado.listarExamenesSolicitadosDeSolicitud(body.get("cod_solicitud"));
 	}
 
 	

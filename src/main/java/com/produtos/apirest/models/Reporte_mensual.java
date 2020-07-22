@@ -5,8 +5,15 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 @Component
 public class Reporte_mensual {
-	String mes;
-	int nro_prestaciones;
+	private String mes;
+	private float monto;
+	public float getMonto() {
+		return monto;
+	}
+	public void setMonto(float monto) {
+		this.monto = monto;
+	}
+	private int nro_prestaciones;
 	public String getMes() {
 		return mes;
 	}
@@ -19,28 +26,21 @@ public class Reporte_mensual {
 	public void setNro_prestaciones(int nro_prestaciones) {
 		this.nro_prestaciones = nro_prestaciones;
 	}
-	double monto;
-	public double getMonto() {
-		return monto;
-	}
-	public void setMonto(double monto) {
-		this.monto = monto;
-	}
 	public Institucion getInstitucion() {
 		return institucion;
 	}
 	public void setInstitucion(Institucion institucion) {
 		this.institucion = institucion;
 	}
-	Institucion institucion;
-	int anio;
+	private Institucion institucion;
+	private int anio;
 public int getAnio() {
 		return anio;
 	}
 	public void setAnio(int anio) {
 		this.anio = anio;
 	}
-	List<Reporte_examen_mensual> reportes_examenes_mensual;
+	private List<Reporte_examen_mensual> reportes_examenes_mensual;
 	public List<Reporte_examen_mensual> getReportes_examenes_mensual() {
 		return reportes_examenes_mensual;
 	}

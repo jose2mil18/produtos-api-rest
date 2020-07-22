@@ -1,10 +1,5 @@
 package com.produtos.apirest.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
@@ -29,7 +24,7 @@ import com.produtos.apirest.models.Paciente;
 import com.produtos.apirest.models.Precio_examen;
 import com.produtos.apirest.models.Solicitud;
 import com.produtos.apirest.Services.ServicioExamen;
-import com.produtos.apirest.Services.ServicioPrecio_examen;
+import com.produtos.apirest.Services.ServicioPrecio_de_examen;
 import com.produtos.apirest.Services.ServicioResultados_examen;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 public class Precio_examenController {
 	
 	@Autowired
-	ServicioPrecio_examen servicioPrecio_examen;
+	ServicioPrecio_de_examen servicioPrecio_examen;
 	
 	@Autowired
 	Precio_examen precio_examen;
@@ -55,6 +50,12 @@ public class Precio_examenController {
 		return servicioPrecio_examen.listarporareacodinstitucion(pe);
 	}
 
+	@ApiOperation(value="Retorna uma lista de examenes por areas y cod institucion")
+	@PostMapping("precio-examen")
+	public Precio_examen precio_examen(@RequestBody Map<String, Integer> body){
+
+		return servicioPrecio_examen.buscarPorCodigo((body.get("cod_precio_examen")));
+	}
 	
 
 }

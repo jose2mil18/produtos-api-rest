@@ -1,5 +1,6 @@
 package com.produtos.apirest.Services;
 
+import java.text.DateFormat;
 import java.text.ParseException; 
 import java.text.SimpleDateFormat; 
 import java.sql.Date;
@@ -36,16 +37,18 @@ public class ServicioDosificacion extends Conexion{
 			modelo.setAutorizacion( rs.getString( "autorizacion" ) );
 			modelo.setNit( rs.getInt( "nit" ) );
 			modelo.setNro_emisiones( rs.getInt( "nro_emisiones" ) );
-			modelo.setFecha_registro( rs.getDate( "fecha_registro" ) );
-			modelo.setFecha_limite_emision( rs.getDate( "fecha_limite_emision" ) );
+		    SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
+			modelo.setFecha_registro( dmyFormat.format(rs.getDate("fecha_registro")) );
+			modelo.setFecha_limite_emision(dmyFormat.format(rs.getDate("fecha_limite_emision")));
+	
 			modelo.setLeyenda( rs.getString( "leyenda" ) );
 			return modelo;
 		}
 	}
-	
-	public List<Dosificacion> listar_Dosificaciones(){
+
+	public List<Dosificacion> listar(){
 		String xsql="	select *	"+
-					"	from dosificacion	";
+					"	from dosificacion	order by fecha_registro desc";
 		return db.query(xsql,new mapearDosificaciones());
 	}
 	
@@ -63,11 +66,30 @@ public class ServicioDosificacion extends Conexion{
 		return db.queryForObject(xsql,new mapearDosificaciones(), autorizacion);
 	}
 	
-	public int adicionarDosificacion(String llave, String autorizacion, Date format_fecha_limite_emision, String leyenda){
-		String xsql="	insert into dosificacion(llave,autorizacion,nit,fecha_limite_emision,leyenda) values(?,?,1654874680,?,?)	";
-		return db.update(xsql,llave,autorizacion,format_fecha_limite_emision,leyenda);
-	}
+	public void registrar(Dosificacion d){
 	
+	System.out.println(d.getFecha_limite_emision());
+		
+		java.util.Date fecha_limite_emision=ParseFecha(d.getFecha_limite_emision());
+System.out.println("fecha_limite_emision"+fecha_limite_emision);
+		
+		Object datos[]= {d.getLlave(), d.getAutorizacion(),1654874680, fecha_limite_emision, d.getLeyenda()};
+		String xsql="	insert into dosificacion(llave,autorizacion,nit,fecha_limite_emision,leyenda, nro_emisiones) values(?,?,?,?,?, 50)	";
+		db.update(xsql,datos);
+	}
+	public static java.util.Date ParseFecha(String fecha)
+	{
+	    SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+	    java.util.Date fechaDate = null;
+	    try {
+	        fechaDate = formato.parse(fecha);
+	    } 
+	    catch (ParseException ex) 
+	    {
+	        System.out.println(ex);
+	    }
+	    return fechaDate;
+	}
 	public Dosificacion verDosificacion(int id_dosificacion){
 		String xsql="	select *	"+
 					"	from dosificacion	"+

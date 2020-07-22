@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Persona{
-	int cod_persona;
-String tipo;
+	private int cod_persona;
+private String tipo;
 	public String getTipo() {
 	return tipo;
 }

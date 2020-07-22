@@ -46,7 +46,7 @@ public class ServicioInstitucion extends Conexion {
 	}
 	
 
-public Institucion instituciondesolicitud(String cod_solicitud){
+public Institucion buscarInstitucionDeSolicitud(String cod_solicitud){
 	
 	//String sql="select  distinct i.cod_institucion, i.nombre, i.cod_institucion_padre from solicitud s, institucion i where i.cod_institucion=s.cod_institucion and s.cod_solicitud="+cod_solicitud+";";
 	String sql="select * from institucion where cod_institucion='"+cod_solicitud+"';";
@@ -59,7 +59,7 @@ public List<Institucion> listapostas(){
 	return  db.query(sql, new InstitucionRowMapper());
 }
 
-public Institucion Institucion(String cod){
+public Institucion buscarPorCodigo(String cod){
 	
 	String sql="select * from institucion where cod_institucion='"+cod+"';";
 	return  db.queryForObject(sql, new InstitucionRowMapper());

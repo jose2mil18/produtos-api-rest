@@ -50,6 +50,13 @@ public class Reporte_examen_mensualController {
 	public List<Reporte_examen_mensual> listaExmaenesPorAreainstitucion(@RequestBody @Valid Reporte_examen_mensual re){
 		
 System.out.println("HO");
-		return servicio_reporte_mensual.reportes(re);
+		return servicio_reporte_mensual.buscar(re);
+	}
+	@ApiOperation(value="Retorna uma lista de examenes por areas y cod institucion")
+	@PostMapping("reporte-de-todos-los-examenes")
+	public List<Reporte_examen_mensual> reportetodoslosexamenes(@RequestBody @Valid Reporte_examen_mensual re){
+		
+System.out.println("HO");
+		return servicio_reporte_mensual.reporteDeTodosLosExamenes(re.getInstitucion().getCod_institucion(), re.getMes(), re.getAnio());
 	}
 }

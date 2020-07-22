@@ -8,14 +8,14 @@ import java.util.*;
 
 @Component
 public class Examen  {
-boolean estado;
+private boolean estado;
 	public boolean getEstado() {
 	return estado;
 }
 public void setEstado(boolean estado) {
 	this.estado = estado;
 }
-	int cod_examen;
+	private int cod_examen;
 	public int getCod_examen() {
 		return cod_examen;
 	}
@@ -40,25 +40,25 @@ public void setEstado(boolean estado) {
 	public void setUnidades(String unidades) {
 		this.unidades = unidades;
 	}
-	String nombre;
-	int  cod_area;
-String unidades="";
-String valor_referencia;
+	private String nombre;
+	private int  cod_area;
+private String unidades="";
+private String valor_referencia;
 public String getValor_referencia() {
 	return valor_referencia;
 }
 public void setValor_referencia(String valor_referencia) {
 	this.valor_referencia = valor_referencia;
 }
-List<Valor_referencia> valores_referencia;
+private List<Valor_referencia> valores_referencia;
 public List<Valor_referencia> getValores_referencia() {
 	return valores_referencia;
 }
 public void setValores_referencia(List<Valor_referencia> valores_referencia) {
 	this.valores_referencia = valores_referencia;
 }
-List<Examen> subexamenes;
-List<Resultados_por_defecto> resultados_por_defecto;
+private List<Examen> subexamenes;
+private List<Resultados_por_defecto> resultados_por_defecto;
 public List<Resultados_por_defecto> getResultados_por_defecto() {
 	return resultados_por_defecto;
 }
@@ -72,21 +72,21 @@ public void setSubexamenes(List<Examen> subexamenes) {
 	this.subexamenes = subexamenes;
 }
 
-List<Precio_examen> precios;
+private List<Precio_examen> precios;
 public List<Precio_examen> getPrecios() {
 	return precios;
 }
 public void setPrecios(List<Precio_examen> precio) {
 	this.precios = precio;
 }
-int num_subexamenes;
+private int num_subexamenes;
 public int getNum_subexamenes() {
 	return num_subexamenes;
 }
 public void setNum_subexamenes(int num_subexamenes) {
 	this.num_subexamenes = num_subexamenes;
 }
-Area area;
+private Area area;
 public Area getArea() {
 	return area;
 }

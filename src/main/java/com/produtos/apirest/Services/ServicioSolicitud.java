@@ -72,9 +72,9 @@ public class ServicioSolicitud extends Conexion {
 			//s.setCedula(rs.getString("cedula_solicitud"));
 			s.setCod_solicitud(rs.getInt("cod_solicitud"));
 		//s.setCod_factura(rs.getInt(("cod_factura")));
-		s.setFactura(servicioFactura.factura_de_solicitud(s.getCod_solicitud()));
+		s.setFactura(servicioFactura.buscarFacturaDeSolicitud(s.getCod_solicitud()));
 		s.setGestion(rs.getInt("gestion"));
-			s.setInstitucion(servicioInstitucion.Institucion(rs.getString("cod_institucion")));
+			s.setInstitucion(servicioInstitucion.buscarPorCodigo(rs.getString("cod_institucion")));
 		
 		s.setEstado_solicitud(rs.getString("estado_solicitud"));
 
@@ -87,7 +87,8 @@ public class ServicioSolicitud extends Conexion {
 			
 			s.setDoctor_solicitante(servicioPersona.obtener_doctor_solicitante(rs.getInt("cod_doctor_solicitante")));
 			
-s.setExamenes_solicitados(servicioExamen_solicitado.examenes_solicitados(s.getCod_solicitud()));
+s.setExamenes_solicitados(servicioExamen_solicitado.listarExamenesSolicitadosDeSolicitud(s.getCod_solicitud()));
+
 String examenes="";
 float costo=0;
 for(Examen_solicitado examen_solicitado:s.getExamenes_solicitados())
@@ -120,6 +121,7 @@ if(s.getExamenes_solicitados().size() == i)
 
 	s.setEstado("Registrado");
 	System.out.println(s.getExamenes_solicitados().size()+"fkdsf"+i+""+s.getEstado());
+	cambiarEstado(s.getCod_solicitud());
 }
 if(s.getExamenes_solicitados().size() == 0){
 
@@ -138,7 +140,9 @@ if(s.getExamenes_solicitados().size() == 0){
 	}
 
 
-
+public void cambiarEstado(int cod_solicitud) {
+	db.update("update solicitud set estado='Registrado' where cod_solicitud="+cod_solicitud+";");
+}
 
 public List<Solicitud> listar(){
 	String sql="select * from solicitud  order by fecha desc;";
@@ -154,10 +158,15 @@ public String minimafechadesolicitud(){
 	
 	 
 }
-public List<Solicitud> listar_solicitudes_de_un_mismo_examen(int cod_precio_examen)
+public List<Solicitud> listar_solicitudes_de_un_mismo_examen(String grupo, String seleccionador)
 {
-	System.out.println(cod_precio_examen);
-	String sql=" select s.cedula_paciente, s.cod_institucion, s.cod_doctor_solicitante, s.fecha, s.fecha_entrega, s.estado, s.cedula_usuario, estado_solicitud, s.gestion  from solicitud s, sol_exam soe where soe.cod_precio_examen= "+cod_precio_examen+" and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) and soe.cod_solicitud=s.cod_solicitud";
+	System.out.println(seleccionador);
+	String sql="select s.cedula_paciente, s.cod_institucion, s.cod_doctor_solicitante, s.fecha, \n" + 
+			"s.fecha_entrega, s.estado, s.cedula_usuario, estado_solicitud, s.gestion  \n" + 
+			"from solicitud s, sol_exam soe, precio_examen pe, examen e, area a\n" + 
+			"where a.cod_area=e.cod_area and soe.cod_precio_examen=pe.cod_precio_examen and e.cod_examen=pe.cod_examen  and (s.fecha>='2019-01-01' and s.fecha<='2020-07-20') and  "+seleccionador+"='"+grupo+"' and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam \n" + 
+			"where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud)\n" + 
+			"and soe.cod_solicitud=s.cod_solicitud";
 	return  db.query(sql, new SolicitudesRowMapper());
 	
 	
@@ -176,7 +185,7 @@ public List<Solicitud> listar_solicitudes_de_un_mismo_examen_entre_Periodo(int c
 	
 	 
 }
-public Solicitud listarSolicitudporcodigo(int cod_solicitud){
+public Solicitud buscarPorCodigo(int cod_solicitud){
 	Object[] datos={cod_solicitud};
 	String sql="select * from solicitud where cod_solicitud=?";
 	return db.queryForObject(sql, datos,new SolicitudRowMapper()
@@ -264,7 +273,7 @@ public List<Solicitud> filtrarSolicitudesPorPaciente(String id){
 }
 	
 
-public List<Solicitud> buscarSolicitudPorCedulaPaciente(String cedula, String area, String caracter_nombre_examen, String fecha_solicitud, String fecha_inicio, String fecha_fin, String estado_solicitud, String resultados){
+public List<Solicitud> buscar(String cedula, String area, String caracter_nombre_examen, String fecha_solicitud, String fecha_inicio, String fecha_fin, String estado_solicitud, String resultados){
 
 	String sql="";
 
@@ -374,6 +383,7 @@ public List<Solicitud> listarAnalisisSinResultados(String cedula, String area, S
 	}
 
 public List<Solicitud> listarAnalisisConResultados(){
+	
 	String sql="select  * from solicitud where estado='Registrado' order by fecha desc";
 	return  db.query(sql, new SolicitudRowMapper());
 }
@@ -486,13 +496,13 @@ java.util.Date fecha=ParseFecha(s.getFecha());
 
 java.util.Date fecha_entrega=ParseFecha(s.getFecha_entrega());
 
-System.out.println("fecha de entrega"+fecha_entrega+"fecha#"+fecha);
+System.out.println("nro de examenes de solicitud"+s.getExamenes_solicitados().size());
 Institucion institucion=new Institucion();
 institucion=s.getInstitucion();
 Persona doctor = new Persona();
 doctor=s.getDoctor_solicitante();
 String insti_padre="vacio";
-eliminarExamenesSolicitados(s.getCod_solicitud());
+//eliminarExamenesSolicitados(s.getCod_solicitud());
 s.getDoctor_solicitante().setTipo("Doctor_solicitante");
 
 Object[] datos={s.getInstitucion().getCod_institucion(), s.getDoctor_solicitante().getCod_persona(), fecha, fecha_entrega,s.getPaciente().getCedula(), s.getEstado(), s.getCedula_usuario(), s.getGestion(), s.getCod_solicitud()};
@@ -516,17 +526,28 @@ else
 
 for(Examen_solicitado examen : s.getExamenes_solicitados())
 {
-
+	System.out.println("estado_examen"+examen.getEstado());
+	if(examen.getCod_sol_exam() ==0 && examen.getEstado().equals("Sin Registrar"))
+	{
 	Object[] datos2={s.getCod_solicitud(), "Sin Registrar", examen.getPrecio_examen().getCod_precio_examen()};
-
 	try {
 		db.update("insert into sol_exam(cod_solicitud, estado, cod_precio_examen) values(?,?,?)", datos2);
 		
 	} catch (DataAccessException e) {	// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-
+	}
+	if(examen.getCod_sol_exam() !=0){
+		Object[] datos2={examen.getEstado(), s.getCod_solicitud(), examen.getPrecio_examen().getCod_precio_examen()};
+		try {
+			db.update("update sol_exam set estado=? where cod_solicitud=? and cod_precio_examen=?", datos2);
+			
+		} catch (DataAccessException e) {	// update sol_exam set estado=? where cod_solicitud=? and cod_precio_examen=?
+			e.printStackTrace();
+		}
+	}
 }
+
 
 
 
@@ -558,7 +579,7 @@ db.update("insert into factura(cod_control, cod_dosificacion, cod_solicitud) val
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-s.setFactura(servicioFactura.factura_de_solicitud(s.getCod_solicitud()));
+s.setFactura(servicioFactura.buscarFacturaDeSolicitud(s.getCod_solicitud()));
 return s;
 }
 
@@ -601,7 +622,7 @@ public class SolicitudesRowMapper implements RowMapper<Solicitud> {
 		//s.setCedula(rs.getString("cedula_solicitud"));
 		
 	s.setGestion(rs.getInt("gestion"));
-		s.setInstitucion(servicioInstitucion.Institucion(rs.getString("cod_institucion")));
+		s.setInstitucion(servicioInstitucion.buscarPorCodigo(rs.getString("cod_institucion")));
 	
 	s.setEstado_solicitud(rs.getString("estado_solicitud"));
 

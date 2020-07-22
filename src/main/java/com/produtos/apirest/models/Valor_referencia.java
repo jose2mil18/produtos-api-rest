@@ -5,23 +5,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Valor_referencia {
-	boolean estado;
+	private boolean estado;
 	public boolean getEstado() {
 		return estado;
 	}
 	public void setEstado(boolean estado) {
 		this.estado = estado;
 	}
-	int cod_valor_referencia;
+	private int cod_valor_referencia;
 public int getCod_valor_referencia() {
 		return cod_valor_referencia;
 	}
 	public void setCod_valor_referencia(int cod_valor_referencia) {
 		this.cod_valor_referencia = cod_valor_referencia;
 	}
-int cod_examen;
-double valor_inicial;
-double valor_final;
+private int cod_examen;
+private double valor_inicial;
+private double valor_final;
 public int getCod_examen() {
 	return cod_examen;
 }
@@ -46,5 +46,5 @@ public String getTipo_persona() {
 public void setTipo_persona(String tipo_persona) {
 	this.tipo_persona = tipo_persona;
 }
-String tipo_persona;
+private String tipo_persona;
 }

@@ -45,38 +45,10 @@ public class ServicioPersona  extends Conexion {
 		 
 	}
 	
-	public String obtener_ap_paciente(String coda){
-		
-		Object[] datos={coda};
-		sql="SELECT ap FROM pacientes WHERE cedula=? ";
-		
-		return db.queryForObject(sql, datos, String.class);
-	}
-public String obtener_am_paciente(String coda){
-		
-		Object[] datos={coda};
-		sql="SELECT am FROM pacientes WHERE cedula=? ";
-		
-		return db.queryForObject(sql, datos, String.class);
-	}
-public String obtener_nombre_paciente(String coda){
 	
-	Object[] datos={coda};
-	sql="SELECT nombre FROM pacientes WHERE cedula=? ";
-	
-	return db.queryForObject(sql, datos, String.class);
-}
 
-public Paciente buscar_por_cedula(String cedula){
 	
-	Object[] datos={cedula};
-	sql="SELECT *  FROM pacientes WHERE cedula=? ";
-	
-	return db.queryForObject(sql, datos, Paciente.class
-			);
-}
-	
-public Persona buscar_por_cod_persona(int cod_persona){
+public Persona buscarPorCodigo(int cod_persona){
 	
 	Object[] datos={cod_persona};
 	sql="SELECT *  FROM persona WHERE cod_persona=? ";
@@ -135,6 +107,14 @@ public Persona registrar(Persona persona){
 	db.update("insert into persona(nombre, ap, am, tipo) values(?, ?, ?, ?);", datos);
 	return db.queryForObject("select * from persona order by cod_persona desc limit 1;", new PersonaRowMapper());
 }
+public Persona modificar(Persona p){
+	String sql1="update  persona set nombre=?, ap=?, am=? where cod_persona=?";
+	Object[] datos1={ p.getNombre(), p.getAp(), p.getAm(),p.getCod_persona()};
+	
+	db.update(sql1, datos1);
+	return buscarPorCodigo(p.getCod_persona());
+}
+
 }
 
 

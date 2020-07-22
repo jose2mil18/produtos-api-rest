@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public List<Rol> listarroldeusuario(String cedula){
 	return  db.query(sql, new RolRowMapper());
 }
 */
-	public Area obtener_area_examen(int cod_examen){
+	public Area buscarAreaDeExamen(int cod_examen){
 	
 Area area=new Area();
 		Object[] datos={cod_examen};
@@ -67,7 +68,6 @@ Area area=new Area();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("klp");
 		}
 		return  area;
 		
@@ -76,14 +76,23 @@ Area area=new Area();
 		
 		 
 	}
-public List<Area> areas(){
+public List<Area> listar(){
 	
 	String sql="select * from area;";
 	return  db.query(sql, new AreaRowMapper());
 }
-public Area obtener_area(int cod_area){
-	
+public Area buscarPorCodigo(int cod_area){
+	int numero=0;
 	String sql="select * from area where cod_area="+cod_area+";";
+	 try {
+		numero=db.queryForObject("select cod_area from area  where cod_area="+cod_area+";", Integer.class);
+	} catch (DataAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	System.out.println("cod_area"+numero);
+	cod_area=1;
+	sql="select * from area where cod_area="+cod_area+";";
 	return  db.queryForObject(sql, new AreaRowMapper());
 }
 

@@ -39,19 +39,19 @@ public class ServicioRol extends Conexion {
 			rol.setCod_rol(rs.getInt("cod_rol"));
 			rol.setNombre(rs.getString("nombre"));
 	
-			rol.setMenus(servicioMenu.listarmenusderol(rs.getInt("cod_rol")));
+			rol.setMenus(servicioMenu.listarMenusDeRol(rs.getInt("cod_rol")));
 			
 			return rol;
 		}
 	}
 	
 
-public List<Rol> listarroldeusuario(String cedula){
+public Rol buscarRolDeUsuario(int cod_rol){
 	
-	String sql="select r.cod_rol, r.nombre from rol r, usuario u, usurol ur where r.cod_rol=ur.cod_rol and u.cedula=ur.cedula_usuario  and u.cedula='"+cedula+"' order by ur.cod_rol;";
-	return  db.query(sql, new RolRowMapper());
+	String sql="select * from rol where cod_rol="+cod_rol+"; ";
+	return  db.queryForObject(sql, new RolRowMapper());
 }
-public List<Rol> roles(){
+public List<Rol> listar(){
 	
 	String sql="select * from rol;";
 	return  db.query(sql, new RolRowMapper());

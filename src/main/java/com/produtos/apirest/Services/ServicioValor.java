@@ -51,7 +51,7 @@ public class ServicioValor extends Conexion {
 
 
 
-public List<Valor> listavalores(int cod_resultados_examen){
+public List<Valor> listarValoresDelResultadoDelExamen(int cod_resultados_examen){
 	
 	String sql="select v.cod_resultados_examen,v.cod, re_po.valor  from resultados_por_defecto re_po, resultados_examen re, valor v, resultados_examen_por_defecto re_ex where re_po.cod_resultados_por_defecto=re_ex.cod_resultados_por_defecto and v.cod_resultados_examen=re.cod_resultados_examen and v.cod_resultados_examen="+cod_resultados_examen+" and re_ex.cod=v.cod;";
 	return  db.query(sql, new ValorRowMapper());

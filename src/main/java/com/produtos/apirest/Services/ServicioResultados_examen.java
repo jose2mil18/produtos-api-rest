@@ -71,7 +71,7 @@ public class ServicioResultados_examen extends Conexion {
 			} catch (Exception e) {
 				// TODO: handle exceptionkl
 			}
-			r.setValores(servicioValor.listavalores(r.getCod_resultados_examen()));
+			r.setValores(servicioValor.listarValoresDelResultadoDelExamen(r.getCod_resultados_examen()));
 /*
 			if(r.getResultados_examenes().size()==0)
 			{
@@ -94,7 +94,7 @@ public class ServicioResultados_examen extends Conexion {
 		
 	}
 	
-	public Solicitud guardar_resultados_examen(Examen_solicitado examen)
+	public Solicitud registrar(Examen_solicitado examen)
 	{
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -193,10 +193,10 @@ public class ServicioResultados_examen extends Conexion {
 
 
 System.out.println("bientio");
-		return servicioSolicitud.listarSolicitudporcodigo(examen.getCod_solicitud());
+		return servicioSolicitud.buscarPorCodigo(examen.getCod_solicitud());
 		
 	}	
-	public Solicitud modificar_resultados_examen(Examen_solicitado examen)
+	public Solicitud modificar(Examen_solicitado examen)
 	{
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -295,7 +295,7 @@ System.out.println("bientio");
 
 
 System.out.println("bientio");
-		return servicioSolicitud.listarSolicitudporcodigo(examen.getCod_solicitud());
+		return servicioSolicitud.buscarPorCodigo(examen.getCod_solicitud());
 		
 	}	
 	public static java.util.Date ParseFecha(String fecha)
@@ -317,7 +317,7 @@ System.out.println("bientio");
 		String sql="select * from resultados_examen where cod_resultados_examen_padre="+cod_resultados_examen+" and cod_resultados_examen_padre is not null;";
 			return  db.query(sql, new Resultados_examenRowMapper());
 	}
-public Resultados_examen obtener_resultados_examen(int cod_sol_exam){
+public Resultados_examen buscarResultadosDeExamenSolicitado(int cod_sol_exam){
 		Object datos[]={cod_sol_exam};
 		String sql="select * from resultados_examen where cod_sol_exam=? and cod_resultados_examen_padre is null;";
 			return  db.queryForObject(sql, datos, new Resultados_examenRowMapper());

@@ -35,7 +35,7 @@ public class ServicioResultados_por_defecto  extends Conexion {
 			return valores;
 		}
 	}
-	public List<Resultados_por_defecto> listar(int cod_examen, String caracter){
+	public List<Resultados_por_defecto> buscar(int cod_examen, String caracter){
 		//List<Resultados_por_defecto> lista=new  ArrayList<Resultados_por_defecto>();
 caracter="%"+caracter+"%";
 		Object[] datos={cod_examen, caracter};
@@ -47,7 +47,7 @@ caracter="%"+caracter+"%";
 		 
 	}
 	
-	public List<Resultados_por_defecto> lista(int cod_examen){
+	public List<Resultados_por_defecto> listarResultadosPorDefectoDeExamen(int cod_examen){
 		
 				Object[] datos={cod_examen};
 				String sql="SELECT re_ex.cod, re_ex.cod_examen, re_po.valor	 FROM resultados_por_defecto re_po, resultados_examen_por_defecto re_ex, examen e where re_po.cod_resultados_por_defecto=re_ex.cod_resultados_por_defecto  and  e.cod_examen=re_ex.cod_examen and e.cod_examen=?;";
@@ -58,50 +58,62 @@ caracter="%"+caracter+"%";
 				 
 			}
 	public Resultados_por_defecto registrar(int cod_examen, String valor){
+		Resultados_por_defecto r=new Resultados_por_defecto();
 		System.out.println(cod_examen+" 2"+valor);
+		 int cod_resultados_por_defecto=0;
 		Object[] datos={valor};
 		
 		String sql="insert into resultados_por_defecto(valor) values(?);";
 
 		String sql2="insert into resultados_examen_por_defecto(cod_examen, cod_resultados_por_defecto) values(?,?);";
+
 	 try {
-		db.update(sql, datos);
+		cod_resultados_por_defecto=db.queryForObject("select cod_resultados_por_defecto from resultados_por_defecto where valor='"+valor+"';", Integer.class);
 	} catch (DataAccessException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-		System.out.println("error");
 	}
-	 int cod_resultados_por_defecto=db.queryForObject("select cod_resultados_por_defecto from resultados_por_defecto where valor='"+valor+"';", Integer.class);
-
+//23
+	 System.out.println("cod_resultados_por_defecto"+cod_resultados_por_defecto);
+	 if(cod_resultados_por_defecto!=0)
+	 {
+		 
+		 int cod2=0;
+		 Object[] datos4={valor, cod_examen};
+		 String sql4="select re_po.cod_resultados_por_defecto from resultados_por_defecto re_po, resultados_examen_por_defecto re_ex where re_ex.cod_resultados_por_defecto="+cod_resultados_por_defecto+" and re_ex.cod_resultados_por_defecto=re_po.cod_resultados_por_defecto and re_ex.cod_examen="+cod_examen+"";
+		 
+		 try {
+			cod2=db.queryForObject(sql4, Integer.class);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("errorkerorororororerooraorororororororororororo");
+		}
+		 System.out.println("klklpklp"+cod2);
+		 if(cod2==0) {
+			 System.out.println("no ahi ese resultadod por defecto asignado al examen");
 		Object[] datos2={cod_examen, cod_resultados_por_defecto};
 	 db.update(sql2, datos2);
+		 }
+		 else {
+			 System.out.println("ya ahi asignado ese valor por defecto al examen");
+		 }
 	 
-		return  db.queryForObject("SELECT re_ex.cod, re_ex.cod_examen, re_po.valor	 FROM resultados_por_defecto re_po, resultados_examen_por_defecto re_ex, examen e where re_po.cod_resultados_por_defecto=re_ex.cod_resultados_por_defecto  and  e.cod_examen=re_ex.cod_examen and e.cod_examen="+cod_examen+" and re_po.cod_resultados_por_defecto="+cod_resultados_por_defecto+";", new Resultados_por_defectoRowMapper());
-		
-		
+	 }
+	 else {
+		 db.update(sql, datos);
+		 cod_resultados_por_defecto=db.queryForObject("select max(cod_resultados_por_defecto) from resultados_por_defecto", Integer.class);
+			Object[] datos3={cod_examen, cod_resultados_por_defecto};
+			 db.update(sql2, datos3);
+		 
+	 }
+
+	 
+	 r=db.queryForObject("SELECT re_ex.cod, re_ex.cod_examen, re_po.valor	 FROM resultados_por_defecto re_po, resultados_examen_por_defecto re_ex, examen e where re_po.cod_resultados_por_defecto=re_ex.cod_resultados_por_defecto  and  e.cod_examen=re_ex.cod_examen and e.cod_examen="+cod_examen+" and re_po.cod_resultados_por_defecto="+cod_resultados_por_defecto+";", new Resultados_por_defectoRowMapper());
+		return r;
 		 
 	}
-	public String obtener_ap_Posta(String coda){
-		
-		Object[] datos={coda};
-		sql="SELECT ap FROM Postas WHERE cedula=? ";
-		
-		return db.queryForObject(sql, datos, String.class);
-	}
-public String obtener_am_Posta(String coda){
-		
-		Object[] datos={coda};
-		sql="SELECT am FROM Postas WHERE cedula=? ";
-		
-		return db.queryForObject(sql, datos, String.class);
-	}
-public String obtener_nombre_Posta(String coda){
-	
-	Object[] datos={coda};
-	sql="SELECT nombre FROM Postas WHERE cedula=? ";
-	
-	return db.queryForObject(sql, datos, String.class);
-}
+
 	
 }
 

@@ -6,15 +6,14 @@ import java.util.Date;
 import Utilidades.UFormat;
 
 public class Factura {
-	int cod_solicitud;
+	private int cod_solicitud;
 	public int getCod_solicitud() {
 		return cod_solicitud;
 	}
 	public void setCod_solicitud(int cod_solicitud) {
 		this.cod_solicitud = cod_solicitud;
 	}
-	UFormat uf=new UFormat();
-	int cod_factura;
+	private int cod_factura;
 	public int getCod_factura() {
 		return cod_factura;
 	}
@@ -33,9 +32,9 @@ public class Factura {
 	public void setCod_dosificacion(int cod_dosificacion) {
 		this.cod_dosificacion = cod_dosificacion;
 	}
-	String cod_control;
-	int cod_dosificacion;
-	Dosificacion dosificacion;
+	private String cod_control;
+	private int cod_dosificacion;
+	private Dosificacion dosificacion;
 	public Dosificacion getDosificacion() {
 		return dosificacion;
 	}

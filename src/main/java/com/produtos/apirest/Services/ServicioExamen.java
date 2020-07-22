@@ -32,7 +32,7 @@ public class ServicioExamen extends Conexion {
 	Solicitud solicitud;
 	@Autowired
 	
-	ServicioPrecio_examen servicioPrecio_examen;
+	ServicioPrecio_de_examen servicioPrecio_examen;
 	@Autowired
 	ServicioResultados_por_defecto servicioResultados_por_defecto;
 	
@@ -48,17 +48,17 @@ public class ServicioExamen extends Conexion {
 			e.setUnidades(rs.getString("unidades"));
 			e.setSubexamenes(listarSubExamenes(rs.getInt("cod_examen")));
 			e.setNum_subexamenes(e.getSubexamenes().size());
-		e.setPrecios(servicioPrecio_examen.listarPrecios(e.getCod_examen()));
+		e.setPrecios(servicioPrecio_examen.buscarPrecioDeExamen(e.getCod_examen()));
 		
 			//e.sebbtResultados_examen(servicioresultados_examen.obtener_resultados_examen_solicitud(rs.getInt("cod_examen")));
-		e.setResultados_por_defecto(servicioResultados_por_defecto.lista(rs.getInt("cod_examen")));
+		e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
 		try {
-			e.setArea(servicioArea.obtener_area_examen(rs.getInt("cod_examen")));
+			e.setArea(servicioArea.buscarAreaDeExamen(rs.getInt("cod_examen")));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		e.setValores_referencia(servicioValor_referencia.listar_valor_referencia(e.getCod_examen()));
+		e.setValores_referencia(servicioValor_referencia.listarValoresDeReferenciaDeExamen(e.getCod_examen()));
 		
 		String val="";
 		for(Valor_referencia v:e.getValores_referencia())
@@ -120,17 +120,17 @@ public class ServicioExamen extends Conexion {
 		String sql6="insert into examen(nombre, cod_area, unidades) values(?, ?, ?)";
 		db.update(sql6, datos6);
 		su.setCod_examen(db.queryForObject("select max(cod_examen) from examen", Integer.class));
-	      servicioValor_referencia.modificarOregistrar(su);
+	      servicioValor_referencia.agregarValoresDeReferenciaAExamen(su);
 		Object[] datos7={cod_examen, su.getCod_examen()};
 		String sql7="insert into examen_subexamen values(?,?)";
 		db.update(sql7, datos7);
 	}
-	public void registrarOactualizarsubexamen(Examen e)
+	public void agregarSubexamenes(Examen e)
 	{
 		for(Examen su: e.getSubexamenes()){
 			su.setCod_area(e.getCod_area());
               if(su.getSubexamenes().size() !=0) {
-            	  registrarOactualizarsubexamen(su);
+            	  agregarSubexamenes(su);
               }
               
               if(su.getCod_examen()!=0)
@@ -139,7 +139,7 @@ public class ServicioExamen extends Conexion {
 			String sql6="update examen set nombre=?, cod_area=?, unidades=? where cod_examen=?";
 			db.update(sql6, datos6);
 			//su.setCod_examen(db.queryForObject("select max(cod_examen) from examen", Integer.class));
-			servicioValor_referencia.modificarOregistrar(su);
+			servicioValor_referencia.agregarValoresDeReferenciaAExamen(su);
 			
 			int subexamencambiado=db.queryForObject("select count(*) from examen_subexamen where cod_examen="+e.getCod_examen()+" and cod_subexamen="+su.getCod_examen()+"", Integer.class);
 			
@@ -153,12 +153,14 @@ public class ServicioExamen extends Conexion {
 			     else 
 			    {
 				Object[] datos8={e.getCod_examen(), su.getCod_examen()};
+				System.out.println("se añadio el subexman registrado en el sitema al examen nuevo"+su.getCod_examen());
 				String sql8="insert into examen_subexamen values(?,?)";
 				db.update(sql8, datos8);
 			     }
               
               }
               else {
+            	  System.out.println("este es elcodigodeexamenpadre"+e.getCod_examen());
             	  regitrar_subexamen(su,e.getCod_examen());
               }
 			
@@ -173,9 +175,9 @@ public Examen registrar(Examen e){
 		String sql1="insert into examen(nombre, cod_area, unidades) values(?, ?, ?)";
 		db.update(sql1, datos1);
 		e.setCod_examen(db.queryForObject("select max(cod_examen) from examen", Integer.class));
-		servicioValor_referencia.modificarOregistrar(e);
-servicioPrecio_examen.modificarOregistrar(e);
-registrarOactualizarsubexamen(e);
+		servicioValor_referencia.agregarValoresDeReferenciaAExamen(e);//
+servicioPrecio_examen.agregarPreciosAExamen(e);
+agregarSubexamenes(e);
 
 		String sql="select * from examen where cod_examen="+e.getCod_examen()+";";
 		return  db.queryForObject(sql, new ExamenRowMapper());
@@ -189,9 +191,9 @@ public Examen modificar(Examen e){
 	Object[] datos1={e.getNombre(), e.getCod_area(), e.getUnidades(), e.getCod_examen()};
 	String sql1="update examen set nombre=?, cod_area=?, unidades=? where cod_examen=? ";
 	db.update(sql1, datos1);
-	servicioValor_referencia.modificarOregistrar(e);
-servicioPrecio_examen.modificarOregistrar(e);
-registrarOactualizarsubexamen(e);
+	servicioValor_referencia.agregarValoresDeReferenciaAExamen(e);//
+servicioPrecio_examen.agregarPreciosAExamen(e);
+agregarSubexamenes(e);
 
 	String sql="select * from examen where cod_examen="+e.getCod_examen()+";";
 	return  db.queryForObject(sql, new ExamenRowMapper());
@@ -289,14 +291,14 @@ int codigo=Integer.parseInt(cod_solicitud);
 			//e.setPrecios(servicioPrecio_examen.listarPrecios(e.getCod_examen()));
 			
 				//e.sebbtResultados_examen(servicioresultados_examen.obtener_resultados_examen_solicitud(rs.getInt("cod_examen")));
-			e.setResultados_por_defecto(servicioResultados_por_defecto.lista(rs.getInt("cod_examen")));
+			e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
 			try {
-				e.setArea(servicioArea.obtener_area_examen(rs.getInt("cod_examen")));
+				e.setArea(servicioArea.buscarAreaDeExamen(rs.getInt("cod_examen")));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			e.setValores_referencia(servicioValor_referencia.listar_valor_referencia(e.getCod_examen()));
+			e.setValores_referencia(servicioValor_referencia.listarValoresDeReferenciaDeExamen(e.getCod_examen()));
 			return e;
 			}
 		}

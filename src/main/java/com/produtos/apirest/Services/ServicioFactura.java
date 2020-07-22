@@ -45,7 +45,7 @@ public class ServicioFactura extends Conexion {
 		}
 	}
 	
-	public Factura factura_de_solicitud(int cod_solicitud){
+	public Factura buscarFacturaDeSolicitud(int cod_solicitud){
 		Factura f=new Factura();
 		String xsql="select * from factura where cod_solicitud=?";
 		try {
@@ -56,7 +56,7 @@ public class ServicioFactura extends Conexion {
 		}
 		return f;
 	}
-	public Factura generarfactura(Solicitud s) {
+	public Factura generarFactura(Solicitud s) {
 
 		try {
 			ControlCode controlCode = new ControlCode();
@@ -79,7 +79,7 @@ public class ServicioFactura extends Conexion {
 		}
         //db.update("insert into factura(cod_control, cod_dosificacion, cod_solicitud) values(?,?,?)", datos);
 		//return db.queryForObject("select * from factura where cod_factura="+numeroFactura+";", new mapearFacturaVenta());
-        return factura_de_solicitud(s.getCod_solicitud());
+        return buscarFacturaDeSolicitud(s.getCod_solicitud());
 	}
 	public int NumeroDeFacturas(){
 		String xsql="select max(cod_factura) as id_factura	from factura";

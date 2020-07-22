@@ -73,7 +73,7 @@ public class ResultadoController {
            //servicioResultados_examen.guardar_resultados_examen(solicitud);
 		
             
-		 return    servicioResultados_examen.guardar_resultados_examen(examen_solicitado);
+		 return    servicioResultados_examen.registrar(examen_solicitado);
 			
 			
 	}
@@ -83,7 +83,7 @@ public class ResultadoController {
            //servicioResultados_examen.guardar_resultados_examen(solicitud);
 		
             
-		 return    servicioResultados_examen.modificar_resultados_examen(examen_solicitado);
+		 return    servicioResultados_examen.modificar(examen_solicitado);
 			
 			
 	}

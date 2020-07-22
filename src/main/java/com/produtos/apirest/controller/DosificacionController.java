@@ -1,4 +1,7 @@
 package com.produtos.apirest.controller;
+import org.springframework.web.bind.annotation.RequestParam;	
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,11 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.produtos.apirest.models.Reporte_anual;
-import com.produtos.apirest.models.Reporte_mensual;
+
 import com.produtos.apirest.models.Persona;
-import com.produtos.apirest.models.Precio_examen;
+
 import com.produtos.apirest.models.Usuario;
+import com.produtos.apirest.models.Dosificacion;
+import com.produtos.apirest.models.Examen;
 import com.produtos.apirest.models.Paciente;
 //import com.produtos.apirest.repository.PacienteRepository;
 import com.produtos.apirest.Services.*;
@@ -37,21 +41,29 @@ import javax.servlet.http.HttpServletRequest;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value="/api")
-@Api(value="API REST reporteanual")
-public class Reporte_anualController {
+@Api(value="API REST Dosificaciones")
+public class DosificacionController {
 	@Autowired
-	ServicioReporte_anual servicio_reporte_anual;
-	
-	@Autowired
-	Reporte_anual reporte_anual;
-	@Autowired
-	ServicioResultados_examen servicioresultados_examen;
+	ServicioDosificacion servicioDosificacion;
 
-	@ApiOperation(value="Retorna uma lista de examenes por areas y cod institucion")
-	@PostMapping("reporte-anual")
-	public Reporte_anual reporte_todos_meses(@RequestBody @Valid Reporte_anual re){
+	//@Autowired
+	//PacienteRepository pacienteRepository;
+
+	
+
+	@ApiOperation(value="Retorna uma lista de dosificaciones")
+	@GetMapping("/dosificaciones")
+	public List<Dosificacion> lista_dosificaciones(){
 		
-System.out.println("HO");
-		return servicio_reporte_anual.buscar(re);
+		return servicioDosificacion.listar();
+			
 	}
+	@ApiOperation(value="registar dosificacion")
+	@PostMapping("dosificacion")
+	public void dosificaionregistrar(@RequestBody @Valid Dosificacion dosificacion) {
+		servicioDosificacion.registrar(dosificacion);
+		
+	}
+
+
 }

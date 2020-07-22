@@ -27,7 +27,7 @@ import com.produtos.apirest.varios.*;
 
 import com.produtos.apirest.Services.ServicioPaciente;
 @Service
-public class ServicioPrecio_examen extends Conexion {
+public class ServicioPrecio_de_examen extends Conexion {
 
 	@Autowired
 	Precio_examen precio_examen;
@@ -51,18 +51,18 @@ i.setCod_precio_examen(rs.getInt("cod_precio_examen"));
 			return i;
 		}
 	}
-	public List<Precio_examen> listarPrecios(int cod_examen){
+	public List<Precio_examen> buscarPrecioDeExamen(int cod_examen){
 		String sql="select pe.estado, pe.cod_precio_examen, pe.cod_institucion, pe.cod_examen, pe.costo from precio_examen pe, examen e where pe.cod_examen=e.cod_examen and pe.cod_examen="+cod_examen+" and estado=true;";
 		return  db.query(sql,new Precio_examenesRowMapper());
 		
 		
 		 
 	}
-	public Precio_examen getById(int cod){
+	public Precio_examen buscarPorCodigo(int cod_precio_examen){
 		
 		//int a=Integer.parseInt(cod_examen);
-System.out.println(cod);
-		Object[] datos={cod};
+
+		Object[] datos={cod_precio_examen};
 		String sql="select * from precio_examen where cod_precio_examen=? and estado=true;";
 		return  db.queryForObject(sql, datos,new Precio_examenRowMapper());
 		
@@ -87,14 +87,18 @@ System.out.println(cod);
 		db.update(sql3,datos3);
 		
 	}
-	public void modificarOregistrar(Examen e) {
+	public void modificar(Precio_examen p) {
+		Object[] datos3={p.getCod_institucion(), p.getCosto(), p.getEstado(), p.getCod_examen(), p.getCod_precio_examen()};
+		String sql3="update precio_examen set cod_institucion=?, costo=?, estado=? where cod_examen=? and cod_precio_examen=? ";
+		db.update(sql3,datos3);
+		
+	}
+	public void agregarPreciosAExamen(Examen e) {
 	for(Precio_examen p:e.getPrecios()){
 		p.setCod_examen(e.getCod_examen());
 			if(p.getCod_precio_examen()!=0)
 			{
-			Object[] datos3={p.getCod_institucion(), p.getCosto(), p.getEstado(), e.getCod_examen(), p.getCod_precio_examen()};
-			String sql3="update precio_examen set cod_institucion=?, costo=?, estado=? where cod_examen=? and cod_precio_examen=? ";
-			db.update(sql3,datos3);
+		modificar(p);
 			}
 			else {
 				registrar(p);
@@ -111,6 +115,7 @@ System.out.println(cod);
 
 			i.setEstado(rs.getBoolean(("estado")));
 i.setCod_precio_examen(rs.getInt("cod_precio_examen"));
+i.setInstitucion(servicioinstitucion.buscarPorCodigo(i.getCod_institucion()));
 			//i.setExamen(servicioExamen.obtener_examen(i.getCod_examen()));
 	//i.setInstitucion_padre(servicioinstitucion.Institucion(rs.getInt("cod_institucion_padre")));
 		

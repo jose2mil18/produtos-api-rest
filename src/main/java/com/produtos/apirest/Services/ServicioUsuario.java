@@ -47,16 +47,16 @@ public class ServicioUsuario extends Conexion {
 			usuario.setCedula(rs.getString("cedula"));
 			usuario.setLogin(rs.getString("login"));
 			//usuario.setCedula(rs.getString("cedula"));
-			usuario.setRoles(servicioRol.listarroldeusuario(rs.getString("cedula")));
+			usuario.setRol(servicioRol.buscarRolDeUsuario(rs.getInt("cod_rol")));
 			usuario.setPassword(rs.getString("password"));
 			usuario.setEstado(rs.getString("estado"));
-			usuario.setPersonal_laboratorio(servicioPersonal.obtener_personal_de_usuario(rs.getString("cedula")));
+			usuario.setPersonal_laboratorio(servicioPersonal.buscarPersonalDeUsuario(rs.getString("cedula")));
 			return usuario;
 		}
 	}
 	
-public Usuario validar_usuario(String log, String cla) {
-	String sql = "select   u.login, u.password, u.estado, u.cedula from usuario u where u.login=? and u.password=? and u.estado='habilitado';";
+public Usuario validar(String log, String cla) {
+	String sql = "select   u.login, u.password, u.estado, u.cedula, u.cod_rol from usuario u where u.login=? and u.password=? and u.estado='habilitado';";
 
 	usuario = db.queryForObject(sql, new UsuarioRowMapper(), log, cla);
 	
@@ -72,7 +72,7 @@ public void guardarImagen( MultipartFile file) throws IOException {
     }
 	
 }
-public Usuario obtener_usuario(String cedula) {
+public Usuario buscarPorCodigo(String cedula) {
 	String sql = "select  * from usuario where cedula=?;";
 Usuario u=new Usuario();
 	try {
@@ -115,70 +115,95 @@ public String obteneram_usuario(String login){
 
 	return db.queryForObject(sql, datos, String.class);
 }
-public List<Usuario> listar(){
-	String sql="select  u.login, u.password, u.estado, u.cedula from usuario u, personal p where p.cedula=u.cedula;";
+public List<Usuario> listar(String estado, String rol, String cedula, String nombres){
+	System.out.println("rol"+rol);
+	System.out.println(cedula);
+	String sql;
+	if(estado.equals("") )
+	{
+sql="select  u.login, u.password, u.estado, u.cedula, u.cod_rol from usuario u, rol r, personal pel, persona per where u.cedula ilike '%"+cedula+"%' and u.estado ilike '%"+estado+"%' and u.cod_rol=r.cod_rol and r.nombre ilike '%"+rol+"%' and pel.cedula=u.cedula and per.cod_persona=pel.cod_persona and (per.nombre ilike '%"+nombres+"%' or per.ap ilike '%"+nombres+"%' or per.am ilike '%"+nombres+"%');";
+	}
+	else
+	{
+
+	sql="select  u.login, u.password, u.estado, u.cedula, u.cod_rol from usuario u, rol r, personal pel, persona per  where u.cedula ilike '%"+cedula+"%' and u.estado= '"+estado+"' and u.cod_rol=r.cod_rol and r.nombre ilike '%"+rol+"%'  and pel.cedula=u.cedula and per.cod_persona=pel.cod_persona and (per.nombre ilike '%"+nombres+"%' or per.ap ilike '%"+nombres+"%' or per.am ilike '%"+nombres+"%');";
+	}
 	return  db.query(sql, new UsuarioRowMapper());
 	
 	
 	 
 }
 @SuppressWarnings("deprecation")
-public void registrar(Usuario u){
+public Usuario registrar(Usuario u){
 
 String tipo="Doctor";
 Object[] datos1={u.getPersonal_laboratorio().getPersona().getNombre(), u.getPersonal_laboratorio().getPersona().getAp(), u.getPersonal_laboratorio().getPersona().getAm(), tipo};
-	Object[] datos2={u.getLogin(), u.getPassword(), "habilitado",u.getCedula()};
+	Object[] datos2={u.getLogin(), u.getPassword(), "habilitado",u.getCedula(), u.getRol().getCod_rol()};
 String sql1="insert into persona(nombre, ap, am, tipo) values(?,?,?,?)";
 	
 //	login=new Md4PasswordEncoder().encode(login);
 //	password=new Md4PasswordEncoder().encode(password);
-	String sql2="insert into usuario(login, password, estado, cedula) values(?,?,?,?)";
+	String sql2="insert into usuario(login, password, estado, cedula, cod_rol) values(?,?,?,?,?)";
 	db.update(sql1, datos1);
 	
 	
 	int cod_persona=db.queryForObject("select max(cod_persona) from persona", Integer.class);
 	if(u.getPersonal_laboratorio().getFoto().equals(""))
 	{
+		System.out.println("sin foto");
 	Object datos6[]={u.getCedula(),  u.getPersonal_laboratorio().getProfesion(), cod_persona};
-	db.update("insert into personal values(?,?,?);", datos6);
+	db.update("insert into personal(cedula,profesion,cod_persona) values(?,?,?);", datos6);
 	
 	}
 	else
 	{
+
+		System.out.println("con foto");
 		Object datos6[]={u.getCedula(), u.getPersonal_laboratorio().getFoto(), u.getPersonal_laboratorio().getProfesion(), cod_persona};
 		db.update("insert into personal values(?,?,?,?);", datos6);
 		
 	}
 	db.update(sql2, datos2);
-	
+	/*
 	for(Rol rol : u.getRoles()){
 		Object[] datos3={ u.getCedula(), rol.getCod_rol()};
 	System.out.println(rol.getCod_rol());
 		String sql4="insert into usurol values(?,?)";
 		db.update(sql4, datos3);
 	}
+	*/
 	System.out.println("succesfull");
+	return buscarPorCodigo(u.getCedula());
 }
-public void actualizar(Usuario u){
+public void modificarEstado(Usuario u){
+	System.out.println(u.getEstado());
+	Object[] datos1={ u.getEstado(), u.getCedula()};
+	String sql="update usuario set  estado=? where cedula=?";
+	db.update(sql, datos1);
+
+}
+public Usuario modificar(Usuario u){
 
 
 Object[] datos1={ u.getPersonal_laboratorio().getPersona().getNombre(), u.getPersonal_laboratorio().getPersona().getAp(), u.getPersonal_laboratorio().getPersona().getAm(), u.getPersonal_laboratorio().getPersona().getCod_persona() };
-	Object[] datos2={ u.getEstado(), u.getCedula()};
-	Object[] datos3={u.getRoles().get(0).getCod_rol(), u.getCedula()};
+	Object[] datos2={ u.getEstado(),u.getRol().getCod_rol(), u.getCedula()};
+	//Object[] datos3={u.getRoles().get(0).getCod_rol(), u.getCedula()};
 	Object[] datos4={u.getPersonal_laboratorio().getProfesion(),u.getPersonal_laboratorio().getFoto(), u.getCedula()};
-
+System.out.println(u.getPersonal_laboratorio().getFoto());
 	String sql1="update  persona set nombre=?, ap=?, am=? where cod_persona=?";
 
 //	password=new Md4PasswordEncoder().encode(password);
-	String sql2="update usuario set  estado=? where cedula=?";
-	String sql3="update usurol set  cod_rol=? where cedula_usuario=?";
+	String sql2="update usuario set  estado=?, cod_rol=? where cedula=?";
+	//String sql3="update usurol set  cod_rol=? where cedula_usuario=?";
 	String sql4="update personal set profesion=?, foto=? where cedula=?";
 	db.update(sql1, datos1);
 	db.update(sql2, datos2);
-	db.update(sql3, datos3);
+	//db.update(sql3, datos3);
 
 	db.update(sql4, datos4);
 	System.out.println("succesfull");
+	return buscarPorCodigo(u.getCedula());
+	
 }
 
 
@@ -197,13 +222,7 @@ public Usuario verificarCedulaquenoexista(String cedula){
 			
 }
 	
-public void borrar(String login){
-	System.out.println(login);
-	
-		
-	String sql="update usuarios set estado=0 where login=?;";
-	db.update(sql, login);
-}
+
 
 public void modificar(String login, String cedula, String password, Integer estado, String loginnew){
 	System.out.println(login);

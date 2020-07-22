@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.produtos.apirest.models.Reporte_mensual;
 import com.produtos.apirest.models.Persona;
 import com.produtos.apirest.models.Precio_examen;
+import com.produtos.apirest.models.Reporte_examen_mensual;
 import com.produtos.apirest.models.Usuario;
 import com.produtos.apirest.models.Paciente;
 //import com.produtos.apirest.repository.PacienteRepository;
@@ -50,13 +51,13 @@ public class Reporte_mensualController {
 	public Reporte_mensual reporte_anio_mes(@RequestBody @Valid Reporte_mensual re){
 		
 System.out.println("HO");
-		return servicio_reporte_mensual.reportes(re);
+		return servicio_reporte_mensual.buscar(re);
 	}
 	@ApiOperation(value="Retorna uma lista de examenes por areas y cod institucion")
 	@PostMapping("reporte-todos-meses")
-	public List<Reporte_mensual> reporte_todos_meses(@RequestBody Map<String, String> body){
+	public List<Reporte_mensual> reporte_todos_meses(@RequestBody @Valid Reporte_examen_mensual re){
 		
 System.out.println("HO");
-		return servicio_reporte_mensual.reporte_todos_meses(body.get("cod_institucion"), Integer.parseInt(body.get("anio")));
+		return servicio_reporte_mensual.listarTodosLosMesesDeAcuerdoALaInstitucion(re.getInstitucion().getCod_institucion(), re.getAnio());
 	}
 }

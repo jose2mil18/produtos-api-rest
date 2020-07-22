@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.produtos.apirest.models.CSVData;
 import com.produtos.apirest.models.Examen;
 import com.produtos.apirest.models.Persona;
 
@@ -85,7 +84,7 @@ public class UsuarioController {
 	
 
 
-    private String upload_folder = ".//src//main//resources//imagenes//";
+    private String upload_folder = ".//src//main//resources//archivos//";
 	@Autowired
 	ServicioUsuario servicioUsuario;
 	@Autowired
@@ -93,50 +92,7 @@ public class UsuarioController {
 	
 	
 	
-	@RequestMapping(value="/download", method=RequestMethod.GET) 
-	public ResponseEntity<Object> downloadFile() throws IOException  {
-		FileWriter filewriter =  null;
-		try {
-		CSVData csv1 = new CSVData();
-		csv1.setId("1");
-		csv1.setName("talk2amareswaran");
-		csv1.setNumber("5601");
-		
-		CSVData csv2 = new CSVData();
-		csv2.setId("2");
-		csv2.setName("Amareswaran");
-		csv2.setNumber("8710");
-		
-		List<CSVData> csvDataList = new ArrayList<>();
-		csvDataList.add(csv1);
-		csvDataList.add(csv2);
-		
-		StringBuilder filecontent = new StringBuilder("ID, NAME, NUMBER\n");
-		for(CSVData csv:csvDataList) {
-			filecontent.append(csv.getId()).append(",").append(csv.getName()).append(",").append(csv.getNumber()).append("\n");
-		}
-		
-		String filename = ".//src//main//resources//imagenes//Aula-Virtual-02.jpg";
-		
-		
-		File file = new File(filename);
-		
-		InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-		headers.add("Pragma", "no-cache");
-		headers.add("Expires", "0");
-		
-		ResponseEntity<Object> responseEntity = ResponseEntity.ok().headers(headers).contentLength(file.length()).contentType(MediaType.parseMediaType("application/txt")).body(resource);
-		return responseEntity;
-		} catch (Exception e ) {
-			return new ResponseEntity<>("error occurred", HttpStatus.INTERNAL_SERVER_ERROR);	
-		} finally {
-			if(filewriter!=null)
-				filewriter.close();
-		}
-	}
+
 	@RequestMapping("/file/{fileName}")
 	public void downloadPDFResource(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("fileName") String fileName) throws IOException {
@@ -187,24 +143,25 @@ public class UsuarioController {
 	@PostMapping("/validarusuarios")
 	public Usuario validarusuario(HttpServletRequest request, @RequestBody Map<String, String> body){
 		System.out.println(body.get("login")+"bfad"+body.get("password"));
-		Usuario usuario= servicioUsuario.validar_usuario(body.get("login"), body.get("password"));
+		Usuario usuario= servicioUsuario.validar(body.get("login"), body.get("password"));
 
 		
-			return servicioUsuario.validar_usuario(body.get("login"), body.get("password"));
+			return servicioUsuario.validar(body.get("login"), body.get("password"));
 		 
 			
 	}
 	@ApiOperation(value="Retorna uma lista de usuario")
 	@GetMapping("/usuarios")
-	public List<Usuario> lista_usuarios(){
-		System.out.println("lpmklp");
-		return servicioUsuario.listar();
+	@ResponseBody	
+	public List<Usuario> lista_usuarios(@RequestParam(required=false, defaultValue="") String estado, @RequestParam(required=false, defaultValue="") String rol, @RequestParam(required=false, defaultValue="") String cedula, @RequestParam(required=false, defaultValue="") String nombres){
+		
+		return servicioUsuario.listar(estado, rol, cedula, nombres);
 			
 	}
 	@ApiOperation(value="Retorna uma listade roles")
 	@GetMapping("/roles")
 	public List<Rol> lista_roles(){
-		return servicioRol.roles();
+		return servicioRol.listar();
 			
 	}
 	@PostMapping("/actualizar-password")
@@ -248,11 +205,11 @@ public class UsuarioController {
 	@ApiOperation(value="registrar un  usuario")
 	@PostMapping("usuario")
 	public Usuario registrar_usuario(@RequestBody @Valid Usuario usuario){
-             servicioUsuario.registrar(usuario);
+          Usuario u=   servicioUsuario.registrar(usuario);
              
              
 			
-             return usuario;
+             return u;
 		 
 			
 	}
@@ -261,7 +218,18 @@ public class UsuarioController {
 	public Usuario actualizar_usuario(@RequestBody @Valid Usuario usuario){
 		//String foto=usuario.getPersonal_laboratorio().getFoto();
 //System.out.println("kjkj"+parametro);
-           servicioUsuario.actualizar(usuario);
+          Usuario u= servicioUsuario.modificar(usuario);
+			
+            return u;
+		 
+			
+	}	
+	@ApiOperation(value="actualizar un  usuario")
+	@PutMapping("actualizar-estado-usuario")
+	public Usuario actualizar_esado_usuario(@RequestBody @Valid Usuario usuario){
+		//String foto=usuario.getPersonal_laboratorio().getFoto();
+//System.out.println("kjkj"+parametro);
+           servicioUsuario.modificarEstado(usuario);
 			
             return usuario;
 		 

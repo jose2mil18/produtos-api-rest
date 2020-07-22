@@ -10,9 +10,9 @@ public String getValor() {
 public void setValor(String valor) {
 	this.valor = valor;
 }
-String valor;
-int cod_examen;
-int cod;
+private String valor;
+private int cod_examen;
+private int cod;
 public int getCod() {
 	return cod;
 }

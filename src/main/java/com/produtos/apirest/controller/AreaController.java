@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.produtos.apirest.models.Area;
+import com.produtos.apirest.models.Examen;
 import com.produtos.apirest.Services.*;
 
 import io.swagger.annotations.Api;
@@ -50,12 +51,17 @@ public class AreaController {
 	
 	@Autowired
 	ServicioArea servicioArea;
-	
+	@PostMapping("area")
+	public Area todossugexamenes(@RequestBody Map<String, String> body){
+		
+	return servicioArea.buscarPorCodigo(Integer.parseInt(body.get("cod_area")));
+	}
 	@ApiOperation(value="Retorna uma lista de areas")
 	@GetMapping("areas")//
 	public List<Area> listaAreas(){
+		System.out.println("ana");
 		/*
-try {
+try {jk
 	ana();ffdf
 } catch (FileNotFoundException e) {
 	// TODO Auto-generated catch block
@@ -65,7 +71,7 @@ try {
 	e.printStackTrace();
 }
 */
-		return servicioArea.areas();
+		return servicioArea.listar();
 	}
 	public void ana() throws JRException, FileNotFoundException {
 

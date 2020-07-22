@@ -42,7 +42,7 @@ public class ServicioProceso extends Conexion {
 	}
 
 
-	public List<Proceso> listarprocesosdemenu(int codm){
+	public List<Proceso> listarProcesosDeMenu(int codm){
 		String sql="select p.cod_proceso, p.nombre, p.enlace from proceso p, menu m where m.cod_menu=? and m.cod_menu=p.cod_menu;";
 		return  db.query(sql,new ProcesoRowMapper(), codm);
 		

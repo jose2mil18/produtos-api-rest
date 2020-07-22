@@ -74,28 +74,12 @@ public class PacienteController {
 	@ApiOperation(value="Retorna uma lista de pacientes buscando por el sexo y procedencia")
 	@GetMapping("/paciente")		
 	@ResponseBody		
-	public List<Paciente> examen(@RequestParam(required=false, defaultValue="") String procedencia, @RequestParam(required=false, defaultValue="") String sexo) {			
+	public List<Paciente> examen(@RequestParam(required=false, defaultValue="") String procedencia, @RequestParam(required=false, defaultValue="") String sexo, @RequestParam(required=false, defaultValue="0") String edad) {			
 
-		return servicioPaciente.buscar(procedencia, sexo);
+		return servicioPaciente.buscar(procedencia, sexo, edad);
 		}
 	
-	@ApiOperation(value="busca pacientes")
-	@GetMapping("pacientes/{procedencia}/{sexo}")
-	public List<Paciente> obtenerexamendadoelcodigo(@PathVariable(value="procedencia") String procedencia, @PathVariable(value="sexo") String sexo){
-			
-	/*	for(Paciente paciente : pacienteRepository.findAll())
-		{
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			
-			  Date fecha=paciente.getFnac();
-			  String fechaCadena = sdf.format(fecha);
-			     paciente.setEdad(calcularEdad(fechaCadena));
-		}
-		*/
-	
-		return servicioPaciente.buscar(procedencia, sexo);
-			
-	}
+
 	@ApiOperation(value="registrar un paciente")
 	@PostMapping("paciente")
 	public Paciente registrar_paciente(@RequestBody @Valid Paciente paciente){
@@ -115,7 +99,7 @@ public class PacienteController {
 System.out.println("fecha_naciientoklp"+p.getFnac());
 	
 		     //p.setEdad(calcularEdad(p.getFnac()));
-return servicioPaciente.update(p);
+return servicioPaciente.modificar(p);
 	}
 	
 	@ApiOperation(value="Retorna um paciente unico ")
@@ -123,7 +107,7 @@ return servicioPaciente.update(p);
 	public Paciente buscapaciente(@RequestBody Map<String, String> body){
 	System.out.println(body.get("cedula"));
 		//return servicioPaciente.buscar_por_cedula(body.get("cedula"))
-	return servicioPaciente.buscar_por_cedula(body.get("cedula"));
+	return servicioPaciente.buscarPorCedula(body.get("cedula"));
 	}
 	@ApiOperation(value="Retorna toodos los pacientes por caracter de nombre/ap/am")
 	@PostMapping("/buscar-paciente-por-caracter-de-nombres")
@@ -172,21 +156,6 @@ return servicioPaciente.update(p);
 			return new Integer(servicioPaciente.contarpacientes());
 				
 		}
-		@GetMapping("/proce")
-		public String proce(){
-			
-		/*	for(Paciente paciente : pacienteRepository.findAll())
-			{
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				
-				  Date fecha=paciente.getFnac();
-				  String fechaCadena = sdf.format(fecha);
-				     paciente.setEdad(calcularEdad(fechaCadena));
-			}
-			*/
-			return servicioPaciente.proce();
-				
-		}
-		
+	
 			
 	}

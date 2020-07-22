@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Solicitud   {
-	float costoTotal;
+	private float costoTotal;
 	public float getCostoTotal() {
 		return costoTotal;
 	}
@@ -21,29 +21,29 @@ public class Solicitud   {
 	public void setFactura(Factura factura) {
 		this.factura = factura;
 	}
-	Factura factura;
-	String examenes_solicitados_de_solicitud;
+	private Factura factura;
+	private String examenes_solicitados_de_solicitud;
 	public String getExamenes_solicitados_de_solicitud() {
 		return examenes_solicitados_de_solicitud;
 	}
 	public void setExamenes_solicitados_de_solicitud(String examenes_solicitados_de_solicitud) {
 		this.examenes_solicitados_de_solicitud = examenes_solicitados_de_solicitud;
 	}
-	String cedula_paciente;
+	private String cedula_paciente;
 	public String getCedula_paciente() {
 		return cedula_paciente;
 	}
 	public void setCedula_paciente(String cedula_paciente) {
 		this.cedula_paciente = cedula_paciente;
 	}
-	String estado_solicitud;
+	private String estado_solicitud;
 	public String getEstado_solicitud() {
 		return estado_solicitud;
 	}
 	public void setEstado_solicitud(String estado_solicitud) {
 		this.estado_solicitud = estado_solicitud;
 	}
-	String cedula_usuario;
+	private String cedula_usuario;
 	/*
 	List<Examen> examenes;*/
 	public String getCedula_usuario() {
@@ -75,8 +75,8 @@ public class Solicitud   {
 	public void setEstado(String resultados) {
 		this.estado = resultados;
 	}
-Paciente paciente;
-int gestion;
+private Paciente paciente;
+private int gestion;
 public int getGestion() {
 	return gestion;
 }
@@ -95,8 +95,8 @@ public void setInstitucion(Institucion institucion) {
 public void setPaciente(Paciente paciente) {
 	this.paciente = paciente;
 }
-String fecha;
-String fecha_entrega;
+private String fecha;
+private String fecha_entrega;
 public String getFecha() {
 	return fecha;
 }
@@ -109,16 +109,16 @@ public String getFecha_entrega() {
 public void setFecha_entrega(String fecha_entrega) {
 	this.fecha_entrega = fecha_entrega;
 }
-Persona doctor_solicitante;
+private Persona doctor_solicitante;
 public Persona getDoctor_solicitante() {
 	return doctor_solicitante;
 }
 public void setDoctor_solicitante(Persona doctor_solicitante) {
 	this.doctor_solicitante = doctor_solicitante;
 }
-int cod_solicitud;
-Institucion institucion;
-List<Examen_solicitado> examenes_solicitados;
+private int cod_solicitud;
+private Institucion institucion;
+private List<Examen_solicitado> examenes_solicitados;
 
 public List<Examen_solicitado> getExamenes_solicitados_con_resultados_actualizados() {
 	return examenes_solicitados_con_resultados_actualizados;
@@ -127,13 +127,13 @@ public void setExamenes_solicitados_con_resultados_actualizados(
 		List<Examen_solicitado> examenes_solicitados_con_resultados_actualizados) {
 	this.examenes_solicitados_con_resultados_actualizados = examenes_solicitados_con_resultados_actualizados;
 }
-List<Examen_solicitado> examenes_solicitados_con_resultados_actualizados;
+private List<Examen_solicitado> examenes_solicitados_con_resultados_actualizados;
 public List<Examen_solicitado> getExamenes_solicitados() {
 	return examenes_solicitados;
 }
 public void setExamenes_solicitados(List<Examen_solicitado> examenes_solicitados) {
 	this.examenes_solicitados = examenes_solicitados;
 }
-String estado;
+private String estado;
 
 }

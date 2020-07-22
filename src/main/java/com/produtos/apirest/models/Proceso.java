@@ -2,9 +2,9 @@ package com.produtos.apirest.models;
 import org.springframework.stereotype.Component;
 @Component
 public class Proceso {
-int cod_proceso;
-String nombre;
-String enlace;
+private int cod_proceso;
+private String nombre;
+private String enlace;
 public int getCod_proceso() {
 	return cod_proceso;
 }

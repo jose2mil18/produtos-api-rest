@@ -54,7 +54,7 @@ public class InstitucionController {
 	
 		System.out.println(body.get("cod_institucion"));
 		//return servicioExamen.obtener_examen(body.get("cod_examen"));
-		return servicioInstitucion.Institucion(body.get("cod_institucion"));
+		return servicioInstitucion.buscarPorCodigo(body.get("cod_institucion"));
 	
 	
 }

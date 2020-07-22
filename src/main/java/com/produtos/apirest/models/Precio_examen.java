@@ -5,21 +5,28 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 @Component
 public class Precio_examen {
-	boolean estado;
+	private Institucion institucion;
+	public Institucion getInstitucion() {
+		return institucion;
+	}
+	public void setInstitucion(Institucion institucion) {
+		this.institucion = institucion;
+	}
+	private boolean estado;
 public boolean getEstado() {
 		return estado;
 	}
 	public void setEstado(boolean estado) {
 		this.estado = estado;
 	}
-String cod_institucion;
+private String cod_institucion;
 public String getCod_institucion() {
 	return cod_institucion;
 }
 public void setCod_institucion(String cod_precioexamen) {
 	this.cod_institucion = cod_precioexamen;
 }
-int cod_precio_examen;
+private int cod_precio_examen;
 public int getCod_precio_examen() {
 	return cod_precio_examen;
 }
@@ -38,9 +45,9 @@ public float getCosto() {
 public void setCosto(float valor) {
 	this.costo = valor;
 }
-int cod_examen;
-float costo;
-Examen examen;
+private int cod_examen;
+private float costo;
+private Examen examen;
 public Examen getExamen() {
 	return examen;
 }

@@ -4,24 +4,31 @@ import java.io.File;
 
 import org.springframework.web.multipart.MultipartFile;
 public class Personal {
-File archivo;
+	private String link_foto;
+public String getLink_foto() {
+		return link_foto;
+	}
+	public void setLink_foto(String link_foto) {
+		this.link_foto = link_foto;
+	}
+private File archivo;
 	public File getArchivo() {
 		return archivo;
 	}
 	public void setArchivo(File archivo) {
 		this.archivo = archivo;
 	}
-	String foto;
+	private String foto;
 	public String getFoto() {
 		return foto;
 	}
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
-	String cedula;
-int cod_persona;
-String profesion;
-Persona persona;
+	private String cedula;
+private int cod_persona;
+private String profesion;
+private Persona persona;
 public Persona getPersona() {
 	return persona;
 }

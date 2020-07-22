@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 @Component
 public class Menu {
-	int cod_menu;
-	String nombre;
-	List<Proceso> procesos;
+	private int cod_menu;
+	private String nombre;
+	private List<Proceso> procesos;
 	public int getCod_menu() {
 		return cod_menu;
 	}

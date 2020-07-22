@@ -10,7 +10,15 @@ import org.springframework.stereotype.Component;
 //@Table(name="usuario")
 @Component
 public class Usuario{
-	String cedula;
+	private Rol rol;
+	public Rol getRol() {
+		return rol;
+	}
+	public void setRol(Rol rol) {
+		this.rol = rol;
+	}
+
+	private String cedula;
 	public String getCedula() {
 		return cedula;
 	}
@@ -18,13 +26,6 @@ public class Usuario{
 		this.cedula = cedula;
 	}
 
-	List<Rol> roles;
-	public List<Rol> getRoles() {
-		return roles;
-	}
-	public void setRoles(List<Rol> roles) {
-		this.roles = roles;
-	}
 	public String getLogin() {
 		return login;
 	}
