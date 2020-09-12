@@ -36,8 +36,8 @@ public class ServicioPersona  extends Conexion {
 			return p;
 		}
 	}
-	public List<Persona> listar(){
-		String sql="select pe.cod_persona, pe.nombre, pe.ap, pe.am from persona pe, pacientes pa where  pe.cod_persona=pa.cod_persona;";
+	public List<Persona> listarDoctorSolicitante(){
+		String sql="select * from persona where tipo='Doctor_solicitante'";
 		
 		return  db.query(sql, new PersonaRowMapper());
 		
@@ -58,7 +58,7 @@ public Persona buscarPorCodigo(int cod_persona){
 	
 public Persona obtener_persona(int cedula){
 	
-	//obtener persona de paciente
+	//obtener persona de paciente      postgres
 
 	Object[] datos={cedula};
 	String sql="select pe.cod_persona, pe.nombre, pe.ap, pe.am, pe.tipo from persona pe, pacientes pa where  pe.cod_persona=pa.cod_persona and pa.cod_persona=?;";
@@ -89,9 +89,6 @@ public Persona obtener_doctor_solicitante(int cod_doctor_solicitante){
 	Object[] datos={cod_doctor_solicitante};
 	String sql="select * from persona where cod_persona=?;";
 	return  db.queryForObject(sql, datos,new PersonaRowMapper());
-	
-	
-	
 	 
 }
 

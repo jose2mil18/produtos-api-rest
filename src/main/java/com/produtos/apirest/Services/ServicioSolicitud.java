@@ -65,6 +65,8 @@ public class ServicioSolicitud extends Conexion {
 	@Autowired
 	ServicioFactura servicioFactura;
 
+	@Autowired
+	ServicioValor_referencia servicioValor_referencia;
 	public class SolicitudRowMapper implements RowMapper<Solicitud> {
 		@Override
 		public Solicitud mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -72,7 +74,8 @@ public class ServicioSolicitud extends Conexion {
 			//s.setCedula(rs.getString("cedula_solicitud"));
 			s.setCod_solicitud(rs.getInt("cod_solicitud"));
 		//s.setCod_factura(rs.getInt(("cod_factura")));
-		s.setFactura(servicioFactura.buscarFacturaDeSolicitud(s.getCod_solicitud()));
+		
+		
 		s.setGestion(rs.getInt("gestion"));
 			s.setInstitucion(servicioInstitucion.buscarPorCodigo(rs.getString("cod_institucion")));
 		
@@ -83,10 +86,11 @@ public class ServicioSolicitud extends Conexion {
 			s.setFecha(dmyFormat.format(rs.getDate("fecha")));
 			s.setFecha_entrega(dmyFormat.format(rs.getDate("fecha_entrega")));
 			
-			
-			
+			System.out.println("cod_doctorsolicituante"+rs.getInt("cod_doctor_solicitante"));
+			if(rs.getInt("cod_doctor_solicitante")!=0)
+			{
 			s.setDoctor_solicitante(servicioPersona.obtener_doctor_solicitante(rs.getInt("cod_doctor_solicitante")));
-			
+			}
 s.setExamenes_solicitados(servicioExamen_solicitado.listarExamenesSolicitadosDeSolicitud(s.getCod_solicitud()));
 
 String examenes="";
@@ -95,6 +99,36 @@ for(Examen_solicitado examen_solicitado:s.getExamenes_solicitados())
 {
 	examenes=examenes+examen_solicitado.getPrecio_examen().getExamen().getNombre()+"\n";
 	costo=costo+examen_solicitado.getPrecio_examen().getCosto();
+	
+	if(examen_solicitado.getPrecio_examen().getExamen().getNum_subexamenes()==0)
+	{
+	
+	      if(examen_solicitado.getPrecio_examen().getExamen().getValores_referencia().size()>0)
+            {
+		       System.out.println("---------------------------------------numero de valores de referencia de examen"+examen_solicitado.getPrecio_examen().getExamen().getValores_referencia().size());
+     	       for(Valor_referencia v : examen_solicitado.getPrecio_examen().getExamen().getValores_referencia()) {
+     		       int cod_examen=examen_solicitado.getPrecio_examen().getExamen().getCod_examen();
+     		       List<Valor_referencia> valoresDeReferencia = new ArrayList<Valor_referencia>();
+     		       if(examen_solicitado.getEstado().equals("Sin Registrar"))
+     		       {
+     		        valoresDeReferencia=servicioValor_referencia.listarValoresDeReferenciaDeExamenSolicitadoVigente(cod_examen);
+     		      }
+     		     else
+     		       {
+     		    valoresDeReferencia=servicioValor_referencia.listarValoresDeReferenciaDeExamenSolicitadoAntiguo(cod_examen, examen_solicitado.getFecha().toString());
+     			  
+     		        }
+     		     examen_solicitado.getPrecio_examen().getExamen().setValores_referencia(valoresDeReferencia);
+     		  
+     		  
+     	       }
+           }
+	}
+	else
+	{
+
+		agregarValoresDeReferenciaAlExamenSolicitado(examen_solicitado.getPrecio_examen().getExamen(),examen_solicitado);
+	}
 	
 }
 s.setCostoTotal(costo);
@@ -108,24 +142,34 @@ for(Examen_solicitado examen_solicitado:s.getExamenes_solicitados())
 {
 	//examen_solicitado.getPrecio_examen().getExamen().setSubexamenes(servicioExamen.listarSubExamenes(examen_solicitado.getPrecio_examen().getExamen().getCod_examen()));
 	//if(servicioSolicitud.estadoExamenSolicitado(s.getCod_solicitud(), examen_solicitado.getPrecio_examen().getExamen().getCod_examen()).equals("Registrado"))
-	if(examen_solicitado.getEstado().equals("Registrado"))
+	if(examen_solicitado.getEstado().equals("Registrado") || examen_solicitado.getEstado().equals("Actualizado"))
 			
 	{
 	i++;
+	
+	          
+	
 			}
 	
 }
 
+System.out.println("-------------------------------------------------------------"+s.getCod_solicitud()+"-------------------------------------------- ---------------------------------------");
 if(s.getExamenes_solicitados().size() == i)
 {
 
 	s.setEstado("Registrado");
 	System.out.println(s.getExamenes_solicitados().size()+"fkdsf"+i+""+s.getEstado());
-	cambiarEstado(s.getCod_solicitud());
+	cambiarEstado(s.getCod_solicitud(), s.getEstado());
 }
-if(s.getExamenes_solicitados().size() == 0){
-
+else if(i == 0)
+{
+	System.out.println("sin registrar");
 	s.setEstado("Sin Registrar");
+}
+else {
+	System.out.println("pendiente");
+	s.setEstado("Pendiente");
+	cambiarEstado(s.getCod_solicitud(), s.getEstado());
 }
 
 
@@ -134,14 +178,61 @@ if(s.getExamenes_solicitados().size() == 0){
 			s.setCedula_paciente(rs.getString("cedula_paciente"));
 	s.setPaciente(servicioPaciente.buscar_paciente_de_solicitud(rs.getString("cedula_paciente")));	
 	
-			
+			if(s.getEstado().equals("Registrado"))
+			{
+				s.setFactura(servicioFactura.buscarFacturaDeSolicitud(s.getCod_solicitud()));
+				
+			}
 			return s;
 		}
 	}
 
+	
 
-public void cambiarEstado(int cod_solicitud) {
-	db.update("update solicitud set estado='Registrado' where cod_solicitud="+cod_solicitud+";");
+
+public void agregarValoresDeReferenciaAlExamenSolicitado(Examen e, Examen_solicitado examen_solicitado) {
+if(e.getSubexamenes().size() !=0)
+{	
+	for(Examen su: e.getSubexamenes()){
+	
+          if(su.getSubexamenes().size() !=0) {
+        	  agregarValoresDeReferenciaAlExamenSolicitado(su,examen_solicitado);
+          }
+          else
+          {
+        	  
+        	  if(su.getValores_referencia().size()>0)
+              {
+  		       System.out.println("---------------------------------------numero de valores de referencia de examen"+e.getValores_referencia().size());
+       	       for(Valor_referencia v : su.getValores_referencia()) {
+       		       int cod_examen=su.getCod_examen();
+       		       List<Valor_referencia> valoresDeReferencia = new ArrayList<Valor_referencia>();
+       		       if(examen_solicitado.getEstado().equals("Sin Registrar"))
+       		       {
+       		        valoresDeReferencia=servicioValor_referencia.listarValoresDeReferenciaDeExamenSolicitadoVigente(cod_examen);
+       		      }
+       		     else
+       		       {
+       		    valoresDeReferencia=servicioValor_referencia.listarValoresDeReferenciaDeExamenSolicitadoAntiguo(cod_examen, examen_solicitado.getFecha().toString());
+       			  
+       		        }
+       		     su.setValores_referencia(valoresDeReferencia);
+       		  
+       		  
+       	       }
+             }
+        	  
+        	  
+        	  
+        	  
+          }
+	}
+}
+
+}
+
+public void cambiarEstado(int cod_solicitud, String estado) {
+	db.update("update solicitud set estado='"+estado+"' where cod_solicitud="+cod_solicitud+";");
 }
 
 public List<Solicitud> listar(){
@@ -274,7 +365,7 @@ public List<Solicitud> filtrarSolicitudesPorPaciente(String id){
 	
 
 public List<Solicitud> buscar(String cedula, String area, String caracter_nombre_examen, String fecha_solicitud, String fecha_inicio, String fecha_fin, String estado_solicitud, String resultados){
-
+System.out.println("------------------------------"+resultados);
 	String sql="";
 
 	if(!fecha_inicio.equals("") && !fecha_fin.equals("")) {
@@ -355,22 +446,22 @@ public List<Solicitud> listarAnalisisSinResultados(String cedula, String area, S
 		java.sql.Date fecha_in=java.sql.Date.valueOf(fecha_inicio);
 
 		java.sql.Date fecha_final=java.sql.Date.valueOf(fecha_fin);
-		sql="select * from solicitud where (fecha>='"+fecha_in+"' and fecha<='"+fecha_final+"') and cedula_paciente ilike '%"+cedula+"%' and estado='Sin Registrar';";
+		sql="select * from solicitud where (fecha>='"+fecha_in+"' and fecha<='"+fecha_final+"') and cedula_paciente ilike '%"+cedula+"%' and (estado='Sin Registrar' or estado='Pendiente');";
 	}
 
 
 	if(!fecha_solicitud.equals("")) {
 		java.sql.Date fecha=java.sql.Date.valueOf(fecha_solicitud);
-		sql="select * from solicitud s where s.fecha='"+fecha+"' and cedula_paciente ilike '%"+cedula+"%' and estado='Sin Registrar';";
+		sql="select * from solicitud s where s.fecha='"+fecha+"' and cedula_paciente ilike '%"+cedula+"%' and (estado='Sin Registrar' or estado='Pendiente');";
 	}
 		if(fecha_inicio.equals("") && fecha_fin.equals("") && fecha_solicitud.equals(""))
 		{
-			sql="select * from solicitud where cedula_paciente='"+cedula+"' and estado='Sin Registrar';";
+			sql="select * from solicitud where cedula_paciente='"+cedula+"' and (estado='Sin Registrar' or estado='Pendiente');";
 
 		}
 		if(fecha_inicio.equals("") && fecha_fin.equals("") && fecha_solicitud.equals("") && cedula.equals(""))
 		{
-			sql="select * from solicitud s where  s.estado_solicitud ilike '%"+estado_solicitud+"%'  and estado='Sin Registrar' order by s.fecha desc";
+			sql="select * from solicitud s where  s.estado_solicitud ilike '%"+estado_solicitud+"%'  and (estado='Sin Registrar' or estado='Pendiente') order by s.fecha desc";
 
 		}
 		
@@ -455,11 +546,13 @@ public void registrar(Solicitud s){
 	java.util.Date fecha_entrega=ParseFecha(s.getFecha_entrega());
 	
 Persona doctor=s.getDoctor_solicitante();
+Object[] datos={s.getInstitucion().getCod_institucion(), null, fecha, fecha_entrega, s.getPaciente().getCedula(), "Sin Registrar", s.getCedula_usuario(), s.getGestion()};
 
-doctor.setTipo("Doctor_solicitante");
+if(!(s.getDoctor_solicitante() == null))
+{
+    doctor.setTipo("Doctor_solicitante");
 
-	Object[] datos={s.getInstitucion().getCod_institucion(), doctor.getCod_persona(), fecha, fecha_entrega, s.getPaciente().getCedula(), "Sin Registrar", s.getCedula_usuario(), s.getGestion()};
-
+	
 	int cod_doctor_solicitante=0;
 	try {
 		cod_doctor_solicitante = db.queryForObject("select cod_persona from persona where nombre='"+doctor.getNombre()+"' and ap='"+doctor.getAp()+"' and am='"+doctor.getAm()+"' and tipo='"+doctor.getTipo()+"';", Integer.class);
@@ -477,20 +570,27 @@ doctor.setTipo("Doctor_solicitante");
 	}
 	System.out.println("soli");
 	
+}
+
+	
 	db.update("insert into solicitud(cod_institucion, cod_doctor_solicitante, fecha, fecha_entrega, cedula_paciente,estado, cedula_usuario, gestion)  values(?,?,?,?,?,?,?,?)", datos);
 
 	
 	int cod_solicitud=db.queryForObject("select max(cod_solicitud) from solicitud", Integer.class);
 	System.out.println("soli"+cod_solicitud);
 	for(Examen_solicitado examen : s.getExamenes_solicitados()){
+		System.out.println("--------------------------estado"+examen.getEstado());
+		if(examen.getEstado().equals("Sin Registrar"))
+		{
 	
 		Object[] datos2={cod_solicitud, "Sin Registrar", examen.getPrecio_examen().getCod_precio_examen()};
 	
 			db.update("insert into sol_exam(cod_solicitud, estado, cod_precio_examen) values(?,?,?)", datos2);
+		}
 	
 	}
 }
-public void modificar(Solicitud s){
+public Solicitud modificar(Solicitud s){
 System.out.println("fecha de entrega"+s.getFecha_entrega());
 java.util.Date fecha=ParseFecha(s.getFecha());
 
@@ -503,9 +603,11 @@ Persona doctor = new Persona();
 doctor=s.getDoctor_solicitante();
 String insti_padre="vacio";
 //eliminarExamenesSolicitados(s.getCod_solicitud());
+if(!(s.getDoctor_solicitante() == null))
+{
 s.getDoctor_solicitante().setTipo("Doctor_solicitante");
 
-Object[] datos={s.getInstitucion().getCod_institucion(), s.getDoctor_solicitante().getCod_persona(), fecha, fecha_entrega,s.getPaciente().getCedula(), s.getEstado(), s.getCedula_usuario(), s.getGestion(), s.getCod_solicitud()};
+Object[] datos={s.getInstitucion().getCod_institucion(), s.getDoctor_solicitante().getCod_persona(), fecha, fecha_entrega,s.getPaciente().getCedula(), s.getEstado(), s.getCedula_usuario(), s.getGestion(),s.getEstado_solicitud(), s.getCod_solicitud()};
 
 int cod_doctor_solicitante=0;
 try {
@@ -515,7 +617,7 @@ try {
 }
 if(cod_doctor_solicitante >0){
 	datos[1]=cod_doctor_solicitante;
-	db.update("update solicitud set cod_institucion=?, cod_doctor_solicitante=?, fecha=?, fecha_entrega=?, cedula_paciente=?,estado=?, cedula_usuario=?, gestion=?  where cod_solicitud=?", datos);
+	db.update("update solicitud set cod_institucion=?, cod_doctor_solicitante=?, fecha=?, fecha_entrega=?, cedula_paciente=?,estado=?, cedula_usuario=?, gestion=?, estado_solicitud=?  where cod_solicitud=?", datos);
 	}
 else
 {
@@ -523,7 +625,13 @@ else
 	db.update("update solicitud set cod_institucion=?, cod_doctor_solicitante=?, fecha=?, fecha_entrega=?, cedula_paciente=?,estado=?, cedula_usuario=?, gestion=?  where cod_solicitud=?", datos);
 
 }
+}
+else {
+	System.out.println("sin doctor solicitante");
+	Object[] datos10={s.getInstitucion().getCod_institucion(), null, fecha, fecha_entrega,s.getPaciente().getCedula(), s.getEstado(), s.getCedula_usuario(), s.getGestion(), s.getCod_solicitud()};
+	db.update("update solicitud set cod_institucion=?, cod_doctor_solicitante=?, fecha=?, fecha_entrega=?, cedula_paciente=?,estado=?, cedula_usuario=?, gestion=?  where cod_solicitud=?", datos10);
 
+}
 for(Examen_solicitado examen : s.getExamenes_solicitados())
 {
 	System.out.println("estado_examen"+examen.getEstado());
@@ -551,8 +659,8 @@ for(Examen_solicitado examen : s.getExamenes_solicitados())
 
 
 
-	
-
+	System.out.println("actuaizaion exitosamente");
+return buscarPorCodigo(s.getCod_solicitud());
 
 }
 
@@ -560,7 +668,9 @@ public Solicitud generarFactura(Solicitud s){
 	System.out.println("cedula_paciente"+s.getCedula_paciente()+"costototal"+s.getCostoTotal());
 	try {
 		ControlCode controlCode = new ControlCode();
-		Dosificacion dosificacion=servicioDosificacion.listarDosificacionVigente();
+		List<Dosificacion> dosificaciones=servicioDosificacion.listarDosificacionVigente();
+		System.out.println("---------------------------dosificciones tamaño"+dosificaciones.size()+"---------------------");
+		Dosificacion dosificacion=dosificaciones.get(0);
 		String autorizacion = dosificacion.getAutorizacion();
 
 		String numeroFactura = Integer.toString(servicioFactura.NumeroDeFacturas()+1);
@@ -631,10 +741,11 @@ public class SolicitudesRowMapper implements RowMapper<Solicitud> {
 		s.setFecha(dmyFormat.format(rs.getDate("fecha")));
 		s.setFecha_entrega(dmyFormat.format(rs.getDate("fecha_entrega")));
 		
-		
-		
+		System.out.println("cod_doctorsolicitante"+rs.getInt("cod_doctor_solicitante"));
+		if(rs.getInt("cod_doctor_solicitante")!=0)
+		{
 		s.setDoctor_solicitante(servicioPersona.obtener_doctor_solicitante(rs.getInt("cod_doctor_solicitante")));
-		
+		}
 int i=0;
 
 s.setEstado(rs.getString("estado"));

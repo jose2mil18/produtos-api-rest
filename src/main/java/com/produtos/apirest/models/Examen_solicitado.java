@@ -3,6 +3,13 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 @Component
 public class Examen_solicitado {
+	private String nota="";
+	public String getNota() {
+		return nota;
+	}
+	public void setNota(String nota) {
+		this.nota = nota;
+	}
 	private int cod_precio_examen;
 	public int getCod_precio_examen() {
 		return cod_precio_examen;

@@ -47,20 +47,34 @@ public class ServicioFactura extends Conexion {
 	
 	public Factura buscarFacturaDeSolicitud(int cod_solicitud){
 		Factura f=new Factura();
+		int cod_factura=0;
+		try {
+			cod_factura = db.queryForObject("select cod_factura from factura where cod_solicitud="+cod_solicitud+";", Integer.class);
+		} catch (DataAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		String xsql="select * from factura where cod_solicitud=?";
+	System.out.println("----------------------cod_factura"+cod_factura);
 		try {
 			f=db.queryForObject(xsql,new mapearFacturaVenta(),cod_solicitud);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
 		return f;
 	}
 	public Factura generarFactura(Solicitud s) {
 
 		try {
 			ControlCode controlCode = new ControlCode();
-			Dosificacion dosificacion=servicioDosificacion.listarDosificacionVigente();
+		
+
+			List<Dosificacion> dosificaciones=servicioDosificacion.listarDosificacionVigente();
+			System.out.println("---------------------------dosificciones tamaño"+dosificaciones.size()+"---------------------");
+			Dosificacion dosificacion=dosificaciones.get(0);
 			String autorizacion = dosificacion.getAutorizacion();
 
 			String numeroFactura = Integer.toString(NumeroDeFacturas()+1);

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.jdbc.object.*;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,6 +28,10 @@ public class ServicioValor_referencia extends Conexion {
 			v.setCod_examen(rs.getInt("cod_examen"));
 			v.setValor_inicial(rs.getDouble("valor_inicial"));
 			v.setValor_final(rs.getDouble("valor_final"));
+
+		    SimpleDateFormat dmyFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+					v.setFecha(dmyFormat.format(rs.getDate("fecha")));
 			if(rs.getString("tipo_persona")== null)
 					{
 			v.setTipo_persona("");
@@ -43,7 +48,27 @@ public class ServicioValor_referencia extends Conexion {
 	
 
 	public List<Valor_referencia> listarValoresDeReferenciaDeExamen(int cod_examen){
-		String sql="select * from valor_referencia where cod_examen="+cod_examen+" and estado=true";
+		String sql="select * from valor_referencia where cod_examen="+cod_examen+" and estado=true order by fecha desc";
+		return  db.query(sql,new Valor_referenciaRowMapper());
+		
+		 
+	}
+	public List<Valor_referencia> listarValoresDeReferenciaDeExamenSolicitadoVigente(int cod_examen){
+		System.out.println("");
+		String sql="select * from valor_referencia v where v.estado=true and v.fecha=(select max(fecha) from valor_referencia \n" + 
+				"														   where tipo_persona=v.tipo_persona and cod_examen=v.cod_examen\n" + 
+				"																 and fecha<=now() and estado=true)\n" + //now es la fecha de ahora
+				"														   and v.cod_examen="+cod_examen+"and v.estado=true; ";
+		return  db.query(sql,new Valor_referenciaRowMapper());
+		
+		 
+	}
+	public List<Valor_referencia> listarValoresDeReferenciaDeExamenSolicitadoAntiguo(int cod_examen, String fecha){
+		System.out.println("-----------------fecha de solicitud"+fecha);
+		String sql="select * from valor_referencia v where v.estado=true and v.fecha=(select max(fecha) from valor_referencia \n" + 
+				"														   where tipo_persona=v.tipo_persona and cod_examen=v.cod_examen\n" + 
+				"																 and fecha<='"+fecha+"' and estado=true)\n" + //now es la fecha de ahora
+				"														   and v.cod_examen="+cod_examen+"and v.estado=true; ";
 		return  db.query(sql,new Valor_referenciaRowMapper());
 		
 		 
@@ -59,11 +84,13 @@ public class ServicioValor_referencia extends Conexion {
 	public void registrar(Valor_referencia v) {
 		
 			
+	if(v.getEstado())
+	{
 		Object[] datos2={v.getCod_examen(), v.getValor_inicial(), v.getValor_final(), v.getTipo_persona()};
 		String sql2="insert into valor_referencia(cod_examen, valor_inicial, valor_final, tipo_persona) values(?,?, ?, ?)";
 		db.update(sql2,datos2);
 		
-		
+	}
 	}
 	public void modificar(Valor_referencia v) {
 		Object[] datos2={ v.getValor_inicial(), v.getValor_final(), v.getTipo_persona(),v.getEstado(), v.getCod_examen(), v.getCod_valor_referencia()};

@@ -97,6 +97,7 @@ public class ServicioResultados_examen extends Conexion {
 	public Solicitud registrar(Examen_solicitado examen)
 	{
 		
+		System.out.println("-------------------------------------------"+examen.getResultados_examen().getValores().get(0).getValor());
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 		java.util.Date date=new java.util.Date();  
@@ -108,10 +109,10 @@ public class ServicioResultados_examen extends Conexion {
 
    if(examen.getEstado().equals("Sin Registrar"))
 	{
-	Object[] datos={ "Registrado", fechaHoy, examen.getCedula_usuario(),  examen.getCod_sol_exam()};
+	Object[] datos={ "Registrado", fechaHoy, examen.getCedula_usuario(), examen.getNota(),  examen.getCod_sol_exam()};
 			//if(!(examen.getResultado_examen().getValores()).get(0).getValor().equals(""))
 			//{
-		db.update("update sol_exam set estado=?, fecha=?, cedula_usuario=? where cod_sol_exam=?;", datos);
+		db.update("update sol_exam set estado=?, fecha=?, cedula_usuario=?, nota=? where cod_sol_exam=?;", datos);
 		
 		Object[] datos2={examen.getPrecio_examen().getExamen().getCod_examen(),examen.getCod_sol_exam()};
 
@@ -123,13 +124,13 @@ public class ServicioResultados_examen extends Conexion {
 		{
 			  for(Valor valor:examen.getResultados_examen().getValores())
 		       {
-				   System.out.println(cod_resultado_examen_solicitado+"a" + valor.getCod());
-			  Object[] datos2_1={cod_resultado_examen_solicitado,valor.getCod()};
+				   System.out.println(cod_resultado_examen_solicitado+"a" + valor.getCod()+"------------------------este es el valor------------------"+valor.getValor());
+			     Object[] datos2_1={cod_resultado_examen_solicitado,valor.getCod()};
 			  
-			  if(valor.getCod()==0){
-				  datos2_1[1]=servicioResultados_por_defecto.registrar(examen.getPrecio_examen().getExamen().getCod_examen(), valor.getValor()).getCod();
-			  }
-		       db.update("insert into valor(cod_resultados_examen,cod) values(?,?);",datos2_1);
+			         if(valor.getCod()==0){
+				     datos2_1[1]=servicioResultados_por_defecto.registrar(examen.getPrecio_examen().getExamen().getCod_examen(), valor.getValor()).getCod();
+			         }
+		             db.update("insert into valor(cod_resultados_examen,cod) values(?,?);",datos2_1);
 		
 		       }
 		}
@@ -192,7 +193,7 @@ public class ServicioResultados_examen extends Conexion {
 }
 
 
-System.out.println("bientio");
+System.out.println("-----------------------------------------------bientio------------------------------------------------------------------------------------------");
 		return servicioSolicitud.buscarPorCodigo(examen.getCod_solicitud());
 		
 	}	
@@ -260,6 +261,7 @@ System.out.println("bientio");
 					   int cod_resultado_examen=db.queryForObject("select max(cod_resultados_examen) from resultados_examen;", Integer.class);
 		                 Object[] datos6={cod_resultado_examen,valor.getCod()};
 		                 if(valor.getCod()==0){
+		                	 System.out.println("este es el valor del resultado del examen de hemoglobina ----------"+valor.getValor());
 		   				  datos6[1]=servicioResultados_por_defecto.registrar(resultados_examen2.getExamen().getCod_examen(), valor.getValor()).getCod();
 		   			  }
 				       db.update("insert into valor(cod_resultados_examen,cod) values(?,?);",datos6);

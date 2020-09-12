@@ -257,9 +257,17 @@ solicitud.setFecha_entrega(fecha_entreg);
 System.out.println(a+" "+b);
 solicitud.setEstado("Sin Registrar");
 */
+		System.out.println("--------------------------------------------------------------"+solicitud.getDoctor_solicitante());
 servicioSolicitud.registrar(solicitud);
 
-	 
+		for(Examen_solicitado examen : solicitud.getExamenes_solicitados()){
+			System.out.println("--------------------------estado"+examen.getEstado());
+			if(examen.getEstado().equals("Sin Registrar"))
+			{
+		 System.out.println(examen.getEstado().equals("Sin Registrar"));
+			}
+		
+		}
            	return solicitud;
 		 
 			
@@ -276,10 +284,10 @@ servicioSolicitud.registrar(solicitud);
 	}
 	@ApiOperation(value="modificar una solicitud")
 	@PutMapping("/solicitud")
-	public Paciente modificarr_solicitud(@RequestBody  @Valid Solicitud solicitud){
+	public Solicitud modificarr_solicitud(@RequestBody  @Valid Solicitud solicitud){
 System.out.println("fecha_wntre"+solicitud.getFecha_entrega());
 
-servicioSolicitud.modificar(solicitud);
+return servicioSolicitud.modificar(solicitud);
 
 	/*	
 if(solicitud.getInstitucion().equals("LABORATORIO UNIVERSIDAD") || solicitud.getInstitucion().equals("PARTICULAR")){
@@ -296,8 +304,7 @@ else
 }
 */
 	 
-           	return solicitud.getPaciente();
-		 
+          
 			
 	}
 	

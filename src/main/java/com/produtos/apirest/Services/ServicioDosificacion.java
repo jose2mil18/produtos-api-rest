@@ -97,10 +97,10 @@ System.out.println("fecha_limite_emision"+fecha_limite_emision);
 		return db.queryForObject(xsql,new mapearDosificaciones(),id_dosificacion);
 	}
 	
-	public Dosificacion listarDosificacionVigente(){
+	public List<Dosificacion> listarDosificacionVigente(){
 		String xsql="	select distinct *	"+
 					"	from dosificacion	"+
 					"	where fecha_limite_emision > now()	";
-		return db.queryForObject(xsql,new mapearDosificaciones());
+		return db.query(xsql,new mapearDosificaciones());
 	}
 }

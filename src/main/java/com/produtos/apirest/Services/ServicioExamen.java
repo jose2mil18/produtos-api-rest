@@ -47,11 +47,11 @@ public class ServicioExamen extends Conexion {
 			e.setCod_area(rs.getInt("cod_area"));
 			e.setUnidades(rs.getString("unidades"));
 			e.setSubexamenes(listarSubExamenes(rs.getInt("cod_examen")));
-			e.setNum_subexamenes(e.getSubexamenes().size());
+			e.setNum_subexamenes(e.getSubexamenes().size());//modificado 03/08/2020
 		e.setPrecios(servicioPrecio_examen.buscarPrecioDeExamen(e.getCod_examen()));
 		
 			//e.sebbtResultados_examen(servicioresultados_examen.obtener_resultados_examen_solicitud(rs.getInt("cod_examen")));
-		e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
+		//e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
 		try {
 			e.setArea(servicioArea.buscarAreaDeExamen(rs.getInt("cod_examen")));
 		} catch (Exception e1) {
@@ -84,7 +84,7 @@ public class ServicioExamen extends Conexion {
 		return  db.query(sql, new ExamenesRowMapper());
 		
 		
-		 
+		
 	}
 	
 	public List<Examen> listartodosSubExamenes(String caracter, int cod_area){
@@ -106,7 +106,7 @@ public class ServicioExamen extends Conexion {
 	public Examen obtener_examen(int cod_examen){
 		
 		//int a=Integer.parseInt(cod_examen);
-
+System.out.println("-----------------------cod_examen"+cod_examen);
 		Object[] datos={cod_examen};
 		String sql="select * from examen where cod_examen=?;";
 		return  db.queryForObject(sql, datos,new ExamenRowMapper());
@@ -116,6 +116,8 @@ public class ServicioExamen extends Conexion {
 		 
 	}
 	public void regitrar_subexamen(Examen su, int cod_examen) {
+		if(su.getEstado())
+		{
 		Object[] datos6={su.getNombre(), su.getCod_area(), su.getUnidades()};
 		String sql6="insert into examen(nombre, cod_area, unidades) values(?, ?, ?)";
 		db.update(sql6, datos6);
@@ -124,6 +126,8 @@ public class ServicioExamen extends Conexion {
 		Object[] datos7={cod_examen, su.getCod_examen()};
 		String sql7="insert into examen_subexamen values(?,?)";
 		db.update(sql7, datos7);
+	}
+		
 	}
 	public void agregarSubexamenes(Examen e)
 	{
@@ -176,6 +180,7 @@ public Examen registrar(Examen e){
 		db.update(sql1, datos1);
 		e.setCod_examen(db.queryForObject("select max(cod_examen) from examen", Integer.class));
 		servicioValor_referencia.agregarValoresDeReferenciaAExamen(e);//
+		System.out.println("-------------------numero de precios de examenes"+e.getPrecios().size()+"--------------------------");
 servicioPrecio_examen.agregarPreciosAExamen(e);
 agregarSubexamenes(e);
 
@@ -291,7 +296,7 @@ int codigo=Integer.parseInt(cod_solicitud);
 			//e.setPrecios(servicioPrecio_examen.listarPrecios(e.getCod_examen()));
 			
 				//e.sebbtResultados_examen(servicioresultados_examen.obtener_resultados_examen_solicitud(rs.getInt("cod_examen")));
-			e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
+			//e.setResultados_por_defecto(servicioResultados_por_defecto.listarResultadosPorDefectoDeExamen(rs.getInt("cod_examen")));
 			try {
 				e.setArea(servicioArea.buscarAreaDeExamen(rs.getInt("cod_examen")));
 			} catch (Exception e1) {

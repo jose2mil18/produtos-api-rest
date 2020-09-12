@@ -5,6 +5,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Valor_referencia {
+	private String fecha;
+	public String getFecha() {
+		return fecha;
+	}
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
 	private boolean estado;
 	public boolean getEstado() {
 		return estado;

@@ -14,6 +14,7 @@ import com.produtos.apirest.Services.*;
 import com.produtos.apirest.Services.ServicioSolicitud.SolicitudRowMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Service;
@@ -81,33 +82,59 @@ public class ServicioPaciente  extends Conexion {
 		p=buscarPorCedula(cedula);
 		return p.getPersona().getNombre()+" "+p.getPersona().getAp()+" "+p.getPersona().getAm();
 	}
-	public List<Paciente> buscar(String procedencia, String sexo, String eda){
+	public List<Paciente> buscar(String procedencia, String sexo, String eda, String cedula, String id){
+		System.out.println("-----------------"+procedencia+" sexo"+sexo+"edad "+eda+"cedula"+cedula+"id"+id);
+		
+String nombre="";
+String ap="";
+String am="";
+String operador="";
+		String[] array=id.split(" ");
+		System.out.println("array"+array.length);
+		
+		if(array.length==1)
+		{
+			operador="or";
+		 nombre=id;
+		 ap=id;
+		 am=id;
+		}
+		if(array.length==2)
+		{
+			operador="and";
+			nombre=array[0];
+			ap=array[1];
+			am="";
+		}
+		if(array.length==3)
+		{
+			operador="and";
+			nombre=array[0];
+			ap=array[1];
+			am=array[2];
+		}
+		
 		int edad=0;
 		List<Paciente> pacientes = new ArrayList<Paciente>();
 		System.out.println(eda);
 		try {
 			edad=Integer.parseInt(eda);
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch block20
 			e.printStackTrace();
 		}
-		
-		
-		String sql="select * from pacientes where procedencia ilike '%"+procedencia+"%' and sexo ilike '%"+sexo+"%'";
-		pacientes=db.query(sql, new PacienteRowMapper());
-		
-		if(edad!=0)
+		String sql="";
+		if(edad !=-1)
 		{
-		for(int i=0;i<pacientes.size();i++) {
-			System.out.println("edad"+pacientes.get(i).getEdad());
-			if(pacientes.get(i).getEdad()!=edad) {
-				
-			Paciente p=pacientes.remove(i);
-			System.out.println("paciente eliminado"+p.getPersona().getNombre());
-			i--;
-			}
+	sql="select  pa.cedula, pa.procedencia, pa.sexo, pa.cedula_usuario, pa.fnac, pa.correo_electronico, pa.cod_persona from pacientes pa, persona pe where pe.cod_persona=pa.cod_persona and  pa.procedencia ilike '%"+procedencia+"%' and pa.sexo ilike '%"+sexo+"%' and pa.cedula ilike '%"+cedula+"%'  and (pe.nombre ilike '%"+nombre+"%' "+operador+" pe.ap ilike '%"+ap+"%' "+operador+" pe.am ilike '%"+am+"%'  ) and EXTRACT(YEAR from AGE(pa.fnac))="+edad+"; ";
 		}
+		else {
+		 sql="select  pa.cedula, pa.procedencia, pa.sexo, pa.cedula_usuario, pa.fnac, pa.correo_electronico, pa.cod_persona from pacientes pa, persona pe where pe.cod_persona=pa.cod_persona and  pa.procedencia ilike '%"+procedencia+"%' and pa.sexo ilike '%"+sexo+"%' and pa.cedula ilike '%"+cedula+"%'  and (pe.nombre ilike '%"+nombre+"%' "+operador+" pe.ap ilike '%"+ap+"%' "+operador+" pe.am ilike '%"+am+"%'  ) ; ";
+			
 		}
+		pacientes=db.query(sql, new PacientesRowMapper());
+	System.out.println("------------------------cantidaddepacientes"+pacientes.size());
+		
 		return  pacientes;
 		
 		
@@ -181,12 +208,19 @@ public void registrar(Paciente p){
 
 
 public Paciente buscarPorCedula(String cedula){
-	
+	Paciente p=new Paciente();
+	System.out.println("esa es la cedula"+cedula);
 	Object[] datos={cedula};
 	sql="SELECT *  FROM pacientes WHERE cedula=? ";
 	
-	return db.queryForObject(sql, datos, new PacienteRowMapper()
-			);
+	
+	try {
+		p=db.queryForObject(sql, datos, new PacienteRowMapper());
+	} catch (DataAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return p;
 }
 	
 
@@ -278,10 +312,10 @@ public class PacientesRowMapper implements RowMapper<Paciente> {
 			p.setFnac(dmyFormat.format(rs.getDate("fnac")));
 		
 		 //p.setEdad(rs.getInt("edad"));hj
-		//p.setCedula_usuario(rs.getString("cedula_usuario"));
+		p.setCedula_usuario(rs.getString("cedula_usuario"));
 		//p.setSolicitudes_examenes(servicioSolicitud.buscarSolicitudPorCedulaPaciente(p.getCedula()));
 		//p.setExamenes_solicitados(servicioExamen_solicitado.examenes_solicitados_de_paciente(p.getCedula()));
-		//p.setCorreo_electronico(rs.getString("correo_electronico"));
+		p.setCorreo_electronico(rs.getString("correo_electronico"));
 	
 		return p;
 	}

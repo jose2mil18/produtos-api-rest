@@ -74,9 +74,9 @@ public class PacienteController {
 	@ApiOperation(value="Retorna uma lista de pacientes buscando por el sexo y procedencia")
 	@GetMapping("/paciente")		
 	@ResponseBody		
-	public List<Paciente> examen(@RequestParam(required=false, defaultValue="") String procedencia, @RequestParam(required=false, defaultValue="") String sexo, @RequestParam(required=false, defaultValue="0") String edad) {			
+	public List<Paciente> examen(@RequestParam(required=false, defaultValue="") String procedencia, @RequestParam(required=false, defaultValue="") String sexo, @RequestParam(required=false, defaultValue="0") String edad,  @RequestParam(required=false, defaultValue="") String cedula,  @RequestParam(required=false, defaultValue="") String nombres) {			
 
-		return servicioPaciente.buscar(procedencia, sexo, edad);
+		return servicioPaciente.buscar(procedencia, sexo, edad, cedula, nombres);
 		}
 	
 

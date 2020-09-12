@@ -82,9 +82,12 @@ i.setCod_precio_examen(rs.getInt("cod_precio_examen"));
 	}
 	
 	public void registrar(Precio_examen p) {
+		if(p.getEstado())
+		{
 		Object[] datos3={p.getCod_institucion(),p.getCod_examen(), p.getCosto()};
 		String sql3="insert into precio_examen(cod_institucion, cod_examen, costo) values(?,?, ?)";
 		db.update(sql3,datos3);
+		}
 		
 	}
 	public void modificar(Precio_examen p) {
