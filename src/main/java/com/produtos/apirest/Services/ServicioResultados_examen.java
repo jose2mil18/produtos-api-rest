@@ -104,7 +104,6 @@ public class ServicioResultados_examen extends Conexion {
 		System.out.println(dateFormat.format(date)); 
 		java.util.Date fechaHoy=ParseFecha(dateFormat.format(date));
 
-
 	int cod_resultado_examen_solicitado=0;
 
    if(examen.getEstado().equals("Sin Registrar"))
@@ -210,10 +209,10 @@ System.out.println("-----------------------------------------------bientio------
 	int cod_resultado_examen_solicitado=0;
 
    
-	Object[] datos={ examen.getCod_solicitud(), "Actualizado", fechaHoy, examen.getCedula_usuario(),  examen.getPrecio_examen().getCod_precio_examen()};
+	Object[] datos={ examen.getCod_solicitud(), "Actualizado", fechaHoy, examen.getCedula_usuario(),  examen.getPrecio_examen().getCod_precio_examen(), examen.getNota()};
 			//if(!(examen.getResultado_examen().getValores()).get(0).getValor().equals(""))
 			//{
-	db.update("insert into sol_exam(cod_solicitud, estado, fecha, cedula_usuario, cod_precio_examen) values(?,?,?,?,?)", datos);
+	db.update("insert into sol_exam(cod_solicitud, estado, fecha, cedula_usuario, cod_precio_examen, nota) values(?,?,?,?,?,?)", datos);
 	examen.setCod_sol_exam(db.queryForObject("select max(cod_sol_exam) from sol_exam;", Integer.class));
 		
 		Object[] datos2={examen.getPrecio_examen().getExamen().getCod_examen(),examen.getCod_sol_exam()};

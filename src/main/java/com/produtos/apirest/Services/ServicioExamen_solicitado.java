@@ -104,6 +104,13 @@ public List<Examen_solicitado> listarExamenesSolicitadosDeSolicitud(int cod_soli
 	
 	return  db.query(sql,  new Examen_solicitadosRowMapper());
 }
+public List<Examen_solicitado> listarExamenesSolicitadosDeSolicitud2(int cod_solicitud){
+	System.out.println("esa"+cod_solicitud);
+	//String sql="select se.cod_sol_exam, se.cod_solicitud, se.cod_examen, se.estado, se.fecha, se.precio, se.cedula_usuario, se.cod_precio_examen from solicitud s, sol_exam se where s.cod_solicitud=se.cod_solicitud  and se.cod_solicitud="+cod_solicitud+" ;";
+	String sql="select *  from sol_exam so where so.cod_solicitud="+cod_solicitud+" and  so.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=so.cod_precio_examen and cod_solicitud=so.cod_solicitud) and so.estado!='Eliminado' order by so.estado desc";
+	
+	return  db.query(sql,  new Examen_solicitados2RowMapper());
+}
 
 public List<Examen_solicitado> listar(String cedula, String area, String caracter_nombre_examen, String fecha_solicitud, String fecha_inicio, String fecha_fin, String estado_solicitud){
 String sql="";
@@ -217,6 +224,48 @@ else
 		{
 	
 i.setResultados_examen(servicioResultados_examen.buscarResultadosDeExamenSolicitado(i.getCod_sol_exam()));
+		}
+	
+		
+		//i.getResultados_examen().setNum_resultados_examenes(i.getPrecio_examen().getExamen().getNum_subexamenes());
+		return i;
+	}
+}
+
+
+public class Examen_solicitados2RowMapper implements RowMapper<Examen_solicitado> {
+	@Override
+	public Examen_solicitado mapRow(ResultSet rs, int arg1) throws SQLException {
+		Examen_solicitado i=new Examen_solicitado();
+		i.setCod_sol_exam(rs.getInt("cod_sol_exam"));
+		i.setCod_solicitud(rs.getInt("cod_solicitud"));
+		//i.setCod_examen(rs.getInt("cod_examen"));
+		//System.out.println(rs.getInt("cod_precio_examen"));
+	i.setPrecio_examen(servicioPrecio_examen.buscarPorCodigo(rs.getInt("cod_precio_examen")));
+	i.setCod_precio_examen(rs.getInt("cod_precio_examen"));
+	i.setEstado(rs.getString("estado"));
+	i.setNota(rs.getString("nota"));
+		i.setFecha(rs.getDate("fecha"));
+		i.setCedula_usuario(rs.getString("cedula_usuario"));
+		System.out.println("fajkjasklfjasklfjkajfkasdjfkjkadsf"+i.getCedula_usuario());
+				
+		if(!(i.getCedula_usuario() == null))
+		{
+i.setUsuario(servicioUsuario.buscarPorCodigo(i.getCedula_usuario()));
+}
+else
+	
+{
+	i.setUsuario(new Usuario());
+}
+		//i.setExamen(servicioExamen.obtener_examen(i.getCod_examen()));
+		//i.setNum_subexamenes(i.getPrecio_examen().getExamen().getSubexamenes().size());
+//i.setEstado_resultado_examen_padre(servicioEstado_resultado_examen.Estado_resultado_examen(rs.getInt("cod_Estado_resultado_examen_padre")));
+	//i.setResultados_examenes(servicioResultados_examen.obtener_resultados_examenes(i.getCod_sol_exam()));if
+		if(i.getEstado().equals("Registrado")  ||  i.getEstado().equals("Actualizado") )
+		{
+	
+//i.setResultados_examen(servicioResultados_examen.buscarResultadosDeExamenSolicitado(i.getCod_sol_exam()));
 		}
 	
 		

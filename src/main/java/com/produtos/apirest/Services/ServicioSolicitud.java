@@ -365,8 +365,9 @@ public List<Solicitud> filtrarSolicitudesPorPaciente(String id){
 	
 
 public List<Solicitud> buscar(String cedula, String area, String caracter_nombre_examen, String fecha_solicitud, String fecha_inicio, String fecha_fin, String estado_solicitud, String resultados){
-System.out.println("------------------------------"+resultados);
+System.out.println("---------------------------------------------------------------------------------------"+resultados);
 	String sql="";
+	
 
 	if(!fecha_inicio.equals("") && !fecha_fin.equals("")) {
 		System.out.println("este la fe inicio"+fecha_inicio);
@@ -403,7 +404,7 @@ System.out.println("------------------------------"+resultados);
 		System.out.println(area+"    "+cedula+"  "+caracter_nombre_examen);
 		//String sql="select se.cod_sol_exam, se.cod_solicitud, se.cod_examen, se.estado, se.fecha, se.precio, se.cedula_usuario, se.cod_precio_examen from solicitud s, sol_exam se where s.cod_solicitud=se.cod_solicitud  and se.cod_solicitud="+cod_solicitud+" ;";
 		
-		return  db.query(sql,   new SolicitudRowMapper());
+		return  db.query(sql,   new listaSolicitudesRowMapper());
 	}
 public List<Solicitud> filtrarSolicitudesPorFecha(String fechaString){
 
@@ -478,6 +479,9 @@ public List<Solicitud> listarAnalisisConResultados(){
 	String sql="select  * from solicitud where estado='Registrado' order by fecha desc";
 	return  db.query(sql, new SolicitudRowMapper());
 }
+
+
+
 public Solicitud listarAnalisisSinResultadosporcodigo(int cod_solicitud){
 	Object[] datos={cod_solicitud};
 	String sql="select  DISTINCT s.cod_solicitud, s.cedula_paciente, s.cod_institucion, s.cod_doctor_solicitante, s.fecha, s.fecha_entrega, s.estado, s.cedula_usuario, estado_solicitud from solicitud s, pacientes p, examen e, sol_exam soe where p.cedula=s.cedula_paciente and soe.cod_solicitud=s.cod_solicitud and soe.cod_examen=e.cod_examen  and s.estado='Sin Registrar' and s.cod_solicitud="+cod_solicitud+";";
@@ -535,6 +539,8 @@ public void modificarRelacionSolicitudPosta(int cod_solicitud, String institucio
 		//db.update("update posta_soli set cod_posta=?, cod_solicitud=? where cod_solicitud="+cod_solicitud+";", datos);
 	}
 }
+
+
 public void eliminarExamenesSolicitados(int cod_solicitud){
 	//int cod_posta=Integer.parseInt(institucion);
 	Object[] datos={cod_solicitud};
@@ -591,7 +597,9 @@ if(!(s.getDoctor_solicitante() == null))
 	}
 }
 public Solicitud modificar(Solicitud s){
+	System.out.println("esado de esolicitud"+s.getEstado_solicitud());
 System.out.println("fecha de entrega"+s.getFecha_entrega());
+System.out.println("fecha "+s.getFecha());
 java.util.Date fecha=ParseFecha(s.getFecha());
 
 java.util.Date fecha_entrega=ParseFecha(s.getFecha_entrega());
@@ -693,9 +701,12 @@ s.setFactura(servicioFactura.buscarFacturaDeSolicitud(s.getCod_solicitud()));
 return s;
 }
 
-public void actualizarEstadoSolicitud(int cod_solicitud)
+public List<Solicitud> actualizarEstadoSolicitud(Solicitud s)
 {
-	db.update("update solicitud set estado='Registrado' where cod_solicitud="+cod_solicitud+";");
+	System.out.println(s.getFecha_entrega());
+	db.update("update solicitud set estado_solicitud='"+s.getEstado_solicitud()+"' , fecha_entrega='"+s.getFecha_entrega()+"' where cod_solicitud="+s.getCod_solicitud()+";");
+	System.out.println("ok");
+	return listar();
 }
 public static java.sql.Date ConvertirFecha(String fecha){
 	return java.sql.Date.valueOf(fecha.substring(0,2)+"-"+fecha.substring(3,5)+"-"+fecha.substring(6,10));
@@ -765,6 +776,57 @@ s.setCedula_paciente(rs.getString("cedula_paciente"));
 
 
 
+
+
+public class listaSolicitudesRowMapper implements RowMapper<Solicitud> {
+	@Override
+	public Solicitud mapRow(ResultSet rs, int arg1) throws SQLException {
+		Solicitud s=new Solicitud();
+		//s.setCedula(rs.getString("cedula_solicitud"));
+
+		s.setCod_solicitud(rs.getInt("cod_solicitud"));
+s.setPaciente(servicioPaciente.buscar_paciente_de_solicitud(rs.getString("cedula_paciente")));	
+	s.setGestion(rs.getInt("gestion"));
+		s.setInstitucion(servicioInstitucion.buscarPorCodigo(rs.getString("cod_institucion")));
+	
+	s.setEstado_solicitud(rs.getString("estado_solicitud"));
+
+	    SimpleDateFormat dmyFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		s.setFecha(dmyFormat.format(rs.getDate("fecha")));
+		s.setFecha_entrega(dmyFormat.format(rs.getDate("fecha_entrega")));
+		
+		System.out.println("cod_doctorsolicitante"+rs.getInt("cod_doctor_solicitante"));
+
+s.setExamenes_solicitados(servicioExamen_solicitado.listarExamenesSolicitadosDeSolicitud2(s.getCod_solicitud()));
+		if(rs.getInt("cod_doctor_solicitante")!=0)
+		{
+		s.setDoctor_solicitante(servicioPersona.obtener_doctor_solicitante(rs.getInt("cod_doctor_solicitante")));
+		}
+int i=0;
+
+s.setEstado(rs.getString("estado"));
+
+System.out.println("FAdsfdfadsfasfjakfjkajfkajdfkajdfkajkdfjakjfkadjfkadjfjasdkfjakdjfkajfkadjfkasjfkasjfksajfkadjfk");
+
+
+
+
+		s.setCedula_usuario(rs.getString("cedula_usuario"));
+s.setPaciente(servicioPaciente.buscar_paciente_de_solicitud(rs.getString("cedula_paciente")));	
+s.setCedula_paciente(rs.getString("cedula_paciente"));
+
+String examenes="";
+float costo=0;
+for(Examen_solicitado examen_solicitado:s.getExamenes_solicitados())
+{
+	examenes=examenes+examen_solicitado.getPrecio_examen().getExamen().getNombre()+"\n";
+}
+s.setExamenes_solicitados_de_solicitud(examenes);
+		
+		return s;
+	}
+}
 
 
 

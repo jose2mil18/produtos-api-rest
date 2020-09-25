@@ -55,7 +55,7 @@ public class ServicioExamen extends Conexion {
 		try {
 			e.setArea(servicioArea.buscarAreaDeExamen(rs.getInt("cod_examen")));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockfadf
 			e1.printStackTrace();
 		}
 		e.setValores_referencia(servicioValor_referencia.listarValoresDeReferenciaDeExamen(e.getCod_examen()));

@@ -2,7 +2,7 @@ package com.produtos.apirest.models;
 import org.springframework.stereotype.Component;
 @Component
 public class Institucion {
-private String cod_institucion;
+private String cod_institucion="";
 public String getCod_institucion() {
 	return cod_institucion;
 }

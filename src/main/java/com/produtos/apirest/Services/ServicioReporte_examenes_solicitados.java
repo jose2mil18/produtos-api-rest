@@ -80,10 +80,11 @@ public class ServicioReporte_examenes_solicitados extends Conexion {
 			return r;
 		}
 	}
-	public List<Reporte_examenes_solicitados> buscar(String nombre_area, String fecha_inicio, String fecha_fin, String agrupador, String seleccionador){
+	public List<Reporte_examenes_solicitados> buscar(String nombre_area, String fecha_inicio, String fecha_fin, String agrupador, String seleccionador, String fecha_solicitud){
 		System.out.println("agrupador"+agrupador);
 		System.out.println("seleccionador"+seleccionador);
 		System.out.println("area"+nombre_area);
+		System.out.println("fecha"+fecha_solicitud);
 	List<Reporte_examenes_solicitados> r=new ArrayList<Reporte_examenes_solicitados>();
 		String sql="";
 	
@@ -95,7 +96,7 @@ public class ServicioReporte_examenes_solicitados extends Conexion {
 				java.sql.Date fecha_final=java.sql.Date.valueOf(fecha_fin);
 			//seleccionador=soe.cod_precio_examen
 				//agrupador cod_precio_examen
-				sql="SELECT   "+seleccionador+"  ,count("+seleccionador+") as nro_prestaciones   FROM sol_exam soe, solicitud s, precio_examen pe,examen e, area a     WHERE (s.fecha >='"+fecha_in+"' and s.fecha<='"+fecha_final+"') and  pe.cod_examen=e.cod_examen and a.cod_area=e.cod_area and a.nombre ilike '%"+nombre_area+"%' and pe.cod_precio_examen=soe.cod_precio_examen and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion ilike '%%'    and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) group by 1";
+				sql="SELECT   "+seleccionador+"  ,count("+seleccionador+") as nro_prestaciones   FROM sol_exam soe, solicitud s, precio_examen pe,examen e, area a     WHERE  (s.fecha >='"+fecha_in+"' and s.fecha<='"+fecha_final+"') and  pe.cod_examen=e.cod_examen and a.cod_area=e.cod_area and a.nombre ilike '%"+nombre_area+"%' and pe.cod_precio_examen=soe.cod_precio_examen and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion ilike '%%'    and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) group by 1";
 		}
 		else  {
 			sql="SELECT  "+seleccionador+"   ,count("+seleccionador+") as nro_prestaciones   FROM sol_exam soe, solicitud s, precio_examen pe,examen e, area a     WHERE  pe.cod_examen=e.cod_examen and a.cod_area=e.cod_area and a.nombre ilike '%"+nombre_area+"%' and pe.cod_precio_examen=soe.cod_precio_examen and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion ilike '%%'    and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) group by 1";

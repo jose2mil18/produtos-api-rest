@@ -69,7 +69,7 @@ public class ResultadoController {
 
 	@ApiOperation(value="guardar resultados de examenes")
 	@PostMapping("guardar-resultados")
-	public Solicitud registrar_resultadoss(@RequestBody @Valid Examen_solicitado examen_solicitado){
+	public Solicitud registrar_resultados(@RequestBody @Valid Examen_solicitado examen_solicitado){
            //servicioResultados_examen.guardar_resultados_examen(solicitud);
 		
             

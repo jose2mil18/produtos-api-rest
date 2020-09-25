@@ -154,8 +154,8 @@ public List<Paciente> buscar_pacientes_que_hicieron_solicitudes_de_examenes(Stri
 			sql="select   distinct pa.cedula, pa.procedencia, pa.sexo, pa.cedula_usuario, pa.fnac, pa.correo_electronico, pa.cod_persona from pacientes pa, persona pe, solicitud s where s.cedula_paciente=pa.cedula and pe.cod_persona=pa.cod_persona and (pe.nombre ilike '%"+array[0]+"%' and pe.ap ilike '%"+array[1]+"%' ) and estado ilike '%"+resultados+"%' ";
 			
 		}
-if(array.length == 3) {
-	sql="select   distinct pa.cedula, pa.procedencia, pa.sexo, pa.cedula_usuario, pa.fnac, pa.correo_electronico, pa.cod_persona from pacientes pa, persona pe, solicitud s where s.cedula_paciente=pa.cedula and pe.cod_persona=pa.cod_persona and (pe.nombre ilike '%"+array[0]+"%' and pe.ap ilike '%"+array[1]+"%' and pe.am ilike '%"+array[2]+"%'  ) and estado ilike '%"+resultados+"%' ";
+        if(array.length == 3) {
+	    sql="select   distinct pa.cedula, pa.procedencia, pa.sexo, pa.cedula_usuario, pa.fnac, pa.correo_electronico, pa.cod_persona from pacientes pa, persona pe, solicitud s where s.cedula_paciente=pa.cedula and pe.cod_persona=pa.cod_persona and (pe.nombre ilike '%"+array[0]+"%' and pe.ap ilike '%"+array[1]+"%' and pe.am ilike '%"+array[2]+"%'  ) and estado ilike '%"+resultados+"%' ";
 
 			
 		}
@@ -225,7 +225,7 @@ public Paciente buscarPorCedula(String cedula){
 	
 
 public Paciente buscar_paciente_de_solicitud(String cedula){
-	
+	System.out.println("--------ananana------------------------------------------------------------------------------------------------------");
 	Object[] datos={cedula};
 	sql="select distinct p.cedula, p.cod_persona,  p.procedencia, p.sexo, p.cedula_usuario, p.fnac, p.correo_electronico from pacientes p, solicitud s where s.cedula_paciente=p.cedula and s.cedula_paciente=?;";
 	
@@ -300,8 +300,7 @@ public class PacientesRowMapper implements RowMapper<Paciente> {
 		//p.setFecha_nacimiento(rs);
 
 	     //p.setEdad(pa.calcularEdad(rs.getString("fnac")));
-
-		p.setNombres(p.getPersona().getNombre()+" "+p.getPersona().getAp()+" "+p.getPersona().getAm());
+ 
 		    //SimpleDateFormat dmyFormat = new SimpleDateFormat("dd-MM-yyyy");
 
 			//p.setFnac(dmyFormat.format(rs.getDate("fnac")));

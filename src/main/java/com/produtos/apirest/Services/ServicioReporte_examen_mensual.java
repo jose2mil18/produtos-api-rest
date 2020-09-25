@@ -70,10 +70,11 @@ public class ServicioReporte_examen_mensual extends Conexion {
 	
 	public List<Reporte_examen_mensual> reporteDeTodosLosExamenes(String cod_institucion, int mes, int anio){
 		System.out.println("codinstitucion"+cod_institucion);
-		Object datos[]={cod_institucion, mes, anio};	String sql="SELECT  soe.cod_precio_examen ,pe.cod_institucion, extract(month from s.fecha) as mes,extract(year from s.fecha) as anio ,count(soe.cod_precio_examen)  FROM sol_exam soe, solicitud s, precio_examen pe     WHERE  pe.cod_precio_examen=soe.cod_precio_examen and   soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion=?  and extract(month from s.fecha)=? and extract(year from s.fecha)=?  and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) group by 1, 2, 3, 4	";
+		cod_institucion="%"+cod_institucion+"%";
+		Object datos[]={cod_institucion, mes, anio};	String sql="SELECT  soe.cod_precio_examen ,pe.cod_institucion, extract(month from s.fecha) as mes,extract(year from s.fecha) as anio ,count(soe.cod_precio_examen)  FROM sol_exam soe, solicitud s, precio_examen pe     WHERE  pe.cod_precio_examen=soe.cod_precio_examen and   soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) and soe.cod_solicitud=s.cod_solicitud and pe.cod_institucion ilike ?  and extract(month from s.fecha)=? and extract(year from s.fecha)=?  and  soe.cod_sol_exam=(select max(cod_sol_exam) from sol_exam  where cod_precio_examen=soe.cod_precio_examen and cod_solicitud=soe.cod_solicitud) group by 1, 2, 3, 4	";
 				return  db.query(sql,datos, new Reporte_examen_mensualRowMapper());
 		
-		
+
 		 
 	}
 	public int  nroTotalDePrestaciones(String cod_insti, int me, int an){

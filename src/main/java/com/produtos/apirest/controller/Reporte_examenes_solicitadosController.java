@@ -53,7 +53,7 @@ public class Reporte_examenes_solicitadosController {
 	@ResponseBody
 	public List<Reporte_examenes_solicitados> listaReportess(@RequestParam(required=false, defaultValue="") String cedula, @RequestParam(required=false, defaultValue="") String nombre_area, @RequestParam(required=false, defaultValue="") String caracter_nombre_examen, @RequestParam(required=false, defaultValue="") String fecha_solicitud, @RequestParam(required=false, defaultValue="") String fecha_inicio, @RequestParam(required=false, defaultValue="") String fecha_fin, @RequestParam(required=false, defaultValue="") String estado_solicitud,@RequestParam(required=false, defaultValue="") String agrupador,@RequestParam(required=false, defaultValue="") String seleccionador){
 		List<Reporte_examenes_solicitados> re=new ArrayList<Reporte_examenes_solicitados>();
-		 re=servicioReporte_examenes_solicitados.buscar(nombre_area, fecha_inicio, fecha_fin, agrupador, seleccionador);
+		 re=servicioReporte_examenes_solicitados.buscar(nombre_area, fecha_inicio, fecha_fin, agrupador, seleccionador, fecha_solicitud);
 		 int i=0;
 /*
 			if(!fecha_inicio.equals("") && !fecha_fin.equals("")) {
